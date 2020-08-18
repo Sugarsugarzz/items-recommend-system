@@ -1,5 +1,6 @@
 package casia.isiteam.recommendsystem.main;
 
+import casia.isiteam.recommendsystem.algorithms.hr.HotRecommender;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,9 +13,11 @@ import java.util.List;
  */
 public class JobSetter {
 
-    private static Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
+    private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
-    private boolean enableCF, enableCB, enableHR;
+    private boolean enableCF;
+    private boolean enableCB;
+    private boolean enableHR;
 
     /**
      * 构造方法
@@ -26,6 +29,14 @@ public class JobSetter {
         this.enableCF = enableCF;
         this.enableCB = enableCB;
         this.enableHR = enableHR;
+    }
+
+    /**
+     * 为特定用户执行一次推荐
+     * @param userIDs 特定用户ID列表
+     */
+    public void executeInstantJobForCertainUsers(List<Long> userIDs) {
+        executeInstantJob(userIDs);
     }
 
     /**
@@ -42,16 +53,18 @@ public class JobSetter {
      */
     private void executeInstantJob(List<Long> userIDs) {
         // 先用热点新闻推荐器生成今日的热点新闻
-        // HotRecommender
+        HotRecommender.formTodayTopHotNewsList();
 
         if (enableCF)
             logger.info("协同过滤方法 推荐完成！");
         if (enableCB)
             logger.info("基于内容推荐方法 推荐完成！");
-        if (enableHR)
+        if (enableHR) {
+            new HotRecommender().recommend(userIDs);
             logger.info("基于热点推荐方法 推荐完成！");
+        }
+
 
         logger.info("本次推荐结束于 " + new Date());
-
     }
 }

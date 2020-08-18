@@ -17,7 +17,7 @@ public class User {
     public User() {
     }
 
-    public User(int id, String name, String pref_list, String latest_log_time) {
+    public User(long id, String name, String pref_list, String latest_log_time) {
         this.id = id;
         this.name = name;
         this.pref_list = pref_list;
@@ -28,7 +28,7 @@ public class User {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -6,7 +6,7 @@ package casia.isiteam.recommendsystem.model;
 public class News {
 
     // 新闻id
-    private int id;
+    private long id;
     // 新闻内容
     private String content;
     // 新闻发布时间
@@ -14,14 +14,14 @@ public class News {
     // 新闻标题
     private String title;
     // 新闻对应模块id
-    private int module_id;
+    private long module_id;
     // 新闻url
     private String url;
 
     public News() {
     }
 
-    public News(int id, String content, String news_time, String title, int module_id, String url) {
+    public News(long id, String content, String news_time, String title, long module_id, String url) {
         this.id = id;
         this.content = content;
         this.news_time = news_time;
@@ -30,11 +30,11 @@ public class News {
         this.url = url;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -62,11 +62,11 @@ public class News {
         this.title = title;
     }
 
-    public int getModule_id() {
+    public long getModule_id() {
         return module_id;
     }
 
-    public void setModule_id(int module_id) {
+    public void setModule_id(long module_id) {
         this.module_id = module_id;
     }
 

@@ -6,11 +6,11 @@ package casia.isiteam.recommendsystem.model;
 public class NewsLog {
 
     // 浏览记录id
-    private int id;
+    private long id;
     // 用户id
-    private int user_id;
+    private long user_id;
     // 新闻id
-    private int news_id;
+    private long news_id;
     // 浏览时间
     private String view_time;
     // 用户对新闻的偏好程度  0 浏览  1 评论  2 收藏  3 点赞
@@ -19,7 +19,7 @@ public class NewsLog {
     public NewsLog() {
     }
 
-    public NewsLog(int id, int user_id, int news_id, String view_time, int prefer_degree) {
+    public NewsLog(long id, long user_id, long news_id, String view_time, int prefer_degree) {
         this.id = id;
         this.user_id = user_id;
         this.news_id = news_id;
@@ -27,27 +27,27 @@ public class NewsLog {
         this.prefer_degree = prefer_degree;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getUser_id() {
+    public long getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(int user_id) {
+    public void setUser_id(long user_id) {
         this.user_id = user_id;
     }
 
-    public int getNews_id() {
+    public long getNews_id() {
         return news_id;
     }
 
-    public void setNews_id(int news_id) {
+    public void setNews_id(long news_id) {
         this.news_id = news_id;
     }
 

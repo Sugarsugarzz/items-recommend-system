@@ -3,4 +3,10 @@
 
 <mapper namespace="casia.isiteam.recommendsystem.mapper.RecommendationMapper">
 
+    <select id="findTodayRecommendationCountByUser" resultType="long">
+        SELECT COUNT(*)
+        FROM recommendations
+        WHERE derive_time > #{today} and user_id = ${userID}
+    </select>
+
 </mapper>

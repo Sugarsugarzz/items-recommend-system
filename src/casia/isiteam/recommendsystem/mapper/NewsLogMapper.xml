@@ -3,4 +3,11 @@
 
 <mapper namespace="casia.isiteam.recommendsystem.mapper.NewsLogMapper">
 
+    <select id="findAllHotNews" resultType="casia.isiteam.recommendsystem.model.NewsLog">
+        SELECT news_id, COUNT(*) AS visitCount
+        FROM newslogs
+        WHERE view_time > #{startDate}
+        GROUP BY news_id
+        ORDER BY visitCount DESC
+    </select>
 </mapper>

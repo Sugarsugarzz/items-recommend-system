@@ -6,23 +6,23 @@ package casia.isiteam.recommendsystem.model;
 public class NewsModule {
 
     // 新闻模块id
-    private int id;
+    private long id;
     // 新闻模块名
     private String name;
 
     public NewsModule() {
     }
 
-    public NewsModule(int id, String name) {
+    public NewsModule(long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
