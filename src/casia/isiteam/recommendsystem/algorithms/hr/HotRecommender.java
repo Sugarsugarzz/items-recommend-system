@@ -38,11 +38,11 @@ public class HotRecommender implements RecommendAlgorithm {
         for (Long userID : userIDs) {
             // 获取当日已经用CF和CB算法为当前用户推荐的新闻数量，若数量达不到单日最低推荐数量要求，则用热点新闻补充
             long todayRecCount = DBKit.getUserTodayRecommendationCount(todayTimestamp, userID);
-            System.out.println("用户ID：" + userID + "\n 当日已向用户推荐新闻： " + todayRecCount + " 条");
+            System.out.println("用户ID：" + userID + "\n当日已向用户推荐新闻： " + todayRecCount + " 条");
 
             // 计算差值（即需要用hr算法推荐的新闻数量）
             int delta = TOTAL_REC_NUM - (int) todayRecCount;
-            System.out.println("需要热点推荐算法补充的新闻数量为： " + delta);
+            System.out.println("需要热点推荐算法补充的新闻数量为： " + delta + " 条");
 
             // 初始化最终推荐新闻列表
             Set<Long> toBeRecommended = new HashSet<>();

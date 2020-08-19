@@ -119,5 +119,6 @@ public class DBKit {
         obj.setNews_id(recommendNewsID);
         obj.setDerive_algorithm(algorithm_type);
         recommendationMapper.saveRecommendation(obj);
+        sqlSession.commit();
     }
 }
