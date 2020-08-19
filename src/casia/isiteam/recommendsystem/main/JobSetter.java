@@ -1,6 +1,7 @@
 package casia.isiteam.recommendsystem.main;
 
 import casia.isiteam.recommendsystem.algorithms.hr.HotRecommender;
+import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +27,9 @@ public class JobSetter {
      * @param enableHR 是否启动热点头条推荐
      */
     public JobSetter(boolean enableCF, boolean enableCB, boolean enableHR) {
+        // 加载配置文件
+        ConfigGetKit.loadProperties("config");
+        // 初始化算法选择
         this.enableCF = enableCF;
         this.enableCB = enableCB;
         this.enableHR = enableHR;

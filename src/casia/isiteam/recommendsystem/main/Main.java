@@ -29,13 +29,13 @@ public class Main {
 
 
         // 为所有用户执行一次推荐
-        new JobSetter(enableCF, enableCB, enableHR).executeInstantJobForAllUsers();
+//        new JobSetter(enableCF, enableCB, enableHR).executeInstantJobForAllUsers();
 
         // 为特定用户执行一次推荐
-//        List<Long> users = new ArrayList<>();
-//        users.add(1L);
-//        users.add(2L);
-//        new JobSetter(enableCF, enableCB, enableHR).executeInstantJobForCertainUsers(users);
+        List<Long> users = new ArrayList<>();
+        users.add(1L);
+        users.add(2L);
+        new JobSetter(enableCF, enableCB, enableHR).executeInstantJobForCertainUsers(users);
 
     }
 }

@@ -1,6 +1,7 @@
 package casia.isiteam.recommendsystem.algorithms.hr;
 
 import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
+import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import org.apache.logging.log4j.LogManager;
@@ -17,9 +18,9 @@ public class HotRecommender implements RecommendAlgorithm {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // 热点新闻的有效时间
-    public static int beforeDays = -10;
+    public static int beforeDays = ConfigGetKit.getInt("hotBeforeDays");
     // 推荐系统每日为每位用户生成的推荐结果的总数，当CF与CB算法生成的推荐结果不足此数时，由该算法补充
-    public static int TOTAL_REC_NUM = 20;
+    public static int TOTAL_REC_NUM = ConfigGetKit.getInt("totalRecommendation");
     // 将每天生成的 热点新闻ID，按照新闻的热点程度，从高到低放入List
     private static List<Long> topHotNewsList = new ArrayList<>();
 
