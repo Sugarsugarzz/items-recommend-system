@@ -9,4 +9,15 @@
         WHERE derive_time > #{today} and user_id = ${userID}
     </select>
 
+    <select id="findRecommendedNewsByUser" resultType="casia.isiteam.recommendsystem.model.Recommendation">
+        SELECT news_id
+        FROM recommendations
+        WHERE user_id = ${userID} and derive_time > #{date}
+    </select>
+
+    <insert id="saveRecommendation" parameterType="casia.isiteam.recommendsystem.model.Recommendation">
+        INSERT INTO recommendations (user_id, news_id, derive_algorithm)
+        VALUES (${user_id}, ${news_id}, ${derive_algorithm})
+    </insert>
+
 </mapper>

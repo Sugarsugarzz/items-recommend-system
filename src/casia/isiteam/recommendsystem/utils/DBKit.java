@@ -77,6 +77,24 @@ public class DBKit {
         return hotNewsIDs;
     }
 
+    /**
+     * 获取用户浏览过的新闻记录
+     * @param userID 用户ID
+     * @return 浏览过的新闻记录
+     */
+    public static List<NewsLog> getUserBrowsedNews(Long userID) {
+        return newslogMapper.findBrowsedNewsByUser(userID);
+    }
+
+    /**
+     * 获取已向用户推荐过的新闻推荐记录
+     * @param userID 用户ID
+     * @param date 时效性起始日期
+     * @return 推荐记录
+     */
+    public static List<Recommendation> getUserRecommendedNews(Long userID, String date) {
+        return recommendationMapper.findRecommendedNewsByUser(userID, date);
+    }
 
     /**
      * 获取当日为某一用户的已推荐的新闻数量
@@ -88,4 +106,18 @@ public class DBKit {
         return recommendationMapper.findTodayRecommendationCountByUser(timestamp, userID);
     }
 
+    /**
+     * 将推荐结果存入 recommendations 表
+     * @param userID 用户ID
+     * @param recommendNewsID 推荐新闻ID
+     * @param algorithm_type 推荐算法类型
+     */
+    public static void saveRecommendation(Long userID, Long recommendNewsID, int algorithm_type) {
+
+        Recommendation obj = new Recommendation();
+        obj.setUser_id(userID);
+        obj.setNews_id(recommendNewsID);
+        obj.setDerive_algorithm(algorithm_type);
+        recommendationMapper.saveRecommendation(obj);
+    }
 }

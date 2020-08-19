@@ -38,13 +38,13 @@ public class HotRecommender implements RecommendAlgorithm {
         for (Long userID : userIDs) {
             // 获取当日已经用CF和CB算法为当前用户推荐的新闻数量，若数量达不到单日最低推荐数量要求，则用热点新闻补充
             long todayRecCount = DBKit.getUserTodayRecommendationCount(todayTimestamp, userID);
-            System.out.println(userID + " - " + todayRecCount);
+            System.out.println("用户ID：" + userID + "\n 当日已向用户推荐新闻： " + todayRecCount + " 条");
 
             // 计算差值（即需要用hr算法推荐的新闻数量）
             int delta = TOTAL_REC_NUM - (int) todayRecCount;
-            System.out.println("delta -  " + delta);
+            System.out.println("需要热点推荐算法补充的新闻数量为： " + delta);
 
-            // 最终推荐新闻列表
+            // 初始化最终推荐新闻列表
             Set<Long> toBeRecommended = new HashSet<>();
             if (delta > 0) {
                 int i = Math.min(delta, topHotNewsList.size());
@@ -52,14 +52,12 @@ public class HotRecommender implements RecommendAlgorithm {
                     toBeRecommended.add(topHotNewsList.get(i));
             }
 
-
-
-            // 过滤用户已浏览的新闻  // 未实现
-
-            // 过滤已向用户推荐过的新闻  // 未实现
-
-            // 将本次推荐的新闻，存入表中  // 未实现
-
+            // 过滤用户已浏览的新闻
+            RecommendKit.filterBrowsedNews(toBeRecommended, userID);
+            // 过滤已向用户推荐过的新闻
+            RecommendKit.filterRecommendedNews(toBeRecommended, userID);
+            // 将本次推荐的新闻，存入表中
+            RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.HR);
 
             System.out.println("================================================");
             count += toBeRecommended.size();
@@ -70,7 +68,7 @@ public class HotRecommender implements RecommendAlgorithm {
     }
 
     /**
-     * 生成当日的热点新闻
+     * 生成当日的热点新闻列表
      */
     public static void formTodayTopHotNewsList() {
 
@@ -106,7 +104,15 @@ public class HotRecommender implements RecommendAlgorithm {
 
     public static void main(String[] args) {
 
+        formTodayTopHotNewsList();
+        System.out.println("打印一下 tophotnewslist");
+        for (Long hot : getTopHotNewsList()) {
+            System.out.print(hot + " - ");
+        }
         new HotRecommender().recommend(DBKit.getAllUserIDs());
+
+
+
     }
 
 }

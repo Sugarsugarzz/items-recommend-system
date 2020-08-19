@@ -10,4 +10,10 @@
         GROUP BY news_id
         ORDER BY visitCount DESC
     </select>
+
+    <select id="findBrowsedNewsByUser" resultType="casia.isiteam.recommendsystem.model.NewsLog">
+        SELECT news_id
+        FROM newslogs
+        WHERE user_id = ${userID}
+    </select>
 </mapper>
