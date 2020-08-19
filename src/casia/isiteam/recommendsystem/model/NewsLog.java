@@ -1,5 +1,7 @@
 package casia.isiteam.recommendsystem.model;
 
+import java.util.Date;
+
 /**
  * 用户浏览历史记录
  */
@@ -12,14 +14,14 @@ public class NewsLog {
     // 新闻id
     private long news_id;
     // 浏览时间
-    private String view_time;
+    private Date view_time;
     // 用户对新闻的偏好程度  0 浏览  1 评论  2 收藏  3 点赞
     private int prefer_degree;
 
     public NewsLog() {
     }
 
-    public NewsLog(long id, long user_id, long news_id, String view_time, int prefer_degree) {
+    public NewsLog(long id, long user_id, long news_id, Date view_time, int prefer_degree) {
         this.id = id;
         this.user_id = user_id;
         this.news_id = news_id;
@@ -51,11 +53,11 @@ public class NewsLog {
         this.news_id = news_id;
     }
 
-    public String getView_time() {
+    public Date getView_time() {
         return view_time;
     }
 
-    public void setView_time(String view_time) {
+    public void setView_time(Date view_time) {
         this.view_time = view_time;
     }
 
@@ -73,7 +75,7 @@ public class NewsLog {
                 "id=" + id +
                 ", user_id=" + user_id +
                 ", news_id=" + news_id +
-                ", view_time='" + view_time + '\'' +
+                ", view_time=" + view_time +
                 ", prefer_degree=" + prefer_degree +
                 '}';
     }

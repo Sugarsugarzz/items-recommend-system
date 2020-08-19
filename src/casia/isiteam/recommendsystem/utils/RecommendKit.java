@@ -2,15 +2,12 @@ package casia.isiteam.recommendsystem.utils;
 
 import casia.isiteam.recommendsystem.model.NewsLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
-import com.jfinal.plugin.activerecord.DbKit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * 供算法调用的工具方法
@@ -50,6 +47,17 @@ public class RecommendKit {
     }
 
     /**
+     * 在当日基础上增加/减少天数后的日期时间戳，便于推荐算法在比较时间前后时调用
+     * @param beforeDays 增加/减少的天数
+     * @return 日期时间戳
+     */
+    public static Timestamp getInRecTimestamp(int beforeDays) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, beforeDays);
+        return new Timestamp(calendar.getTime().getTime());
+    }
+
+    /**
      * 过滤用户已经看过的新闻
      * @param recNewsList 新闻推荐列表
      * @param userID 用户ID
@@ -74,6 +82,24 @@ public class RecommendKit {
         for (Recommendation recommendation : userRecommendedNews) {
             System.out.println("已向用户推荐过的新闻id - " + recommendation.getNews_id());
             recNewsList.remove(recommendation.getNews_id());
+        }
+    }
+
+    /**
+     * 去除推荐结果中超出数量限制的部分
+     * @param toBeRecommended 推荐候选列表
+     * @param recNum 最大推荐数量限制
+     */
+    public static void removeOverSizeNews(Set<Long> toBeRecommended, int recNum) {
+
+        int i = 0;
+        Iterator<Long> iterator = toBeRecommended.iterator();
+        while (iterator.hasNext()) {
+            if (i >= recNum) {
+                iterator.remove();
+            }
+            iterator.next();
+            i++;
         }
     }
 

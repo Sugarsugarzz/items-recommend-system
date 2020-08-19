@@ -11,30 +11,32 @@ import java.sql.Timestamp;
 import java.util.*;
 
 /**
- * 基于热点新闻的推荐，通常在协同过滤和基于内容推荐结果数量较少时进行数目的补充
+ * 基于热点新闻推荐算法实现，通常在协同过滤和基于内容推荐结果数量较少时进行数目的补充
  */
 public class HotRecommender implements RecommendAlgorithm {
 
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // 热点新闻的有效时间
-    public static int beforeDays = ConfigGetKit.getInt("hotBeforeDays");
+    private static int beforeDays = ConfigGetKit.getInt("hotBeforeDays");
     // 推荐系统每日为每位用户生成的推荐结果的总数，当CF与CB算法生成的推荐结果不足此数时，由该算法补充
-    public static int TOTAL_REC_NUM = ConfigGetKit.getInt("totalRecommendation");
+    private static int TOTAL_REC_NUM = ConfigGetKit.getInt("totalRecommendation");
     // 将每天生成的 热点新闻ID，按照新闻的热点程度，从高到低放入List
     private static List<Long> topHotNewsList = new ArrayList<>();
 
 
     /**
-     * 推荐主函数
+     * HR算法 推荐主函数
      * @param userIDs 用户ID列表
      */
     @Override
     public void recommend(List<Long> userIDs) {
 
         logger.info("基于热点新闻推荐 start at " + new Date());
-        // 统计利用 hr算法 推荐的新闻数量
+        // 统计利用 HR算法 推荐的新闻数量
         int count = 0;
+
+        // 获取当日时间戳
         Timestamp todayTimestamp = getCertainTimestamp(0, 0, 0);
         for (Long userID : userIDs) {
             // 获取当日已经用CF和CB算法为当前用户推荐的新闻数量，若数量达不到单日最低推荐数量要求，则用热点新闻补充

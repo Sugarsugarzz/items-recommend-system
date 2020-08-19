@@ -6,17 +6,22 @@ import casia.isiteam.recommendsystem.mapper.UserMapper;
 import casia.isiteam.recommendsystem.model.NewsLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
 import casia.isiteam.recommendsystem.model.User;
+import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.session.SqlSessionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.sql.DataSource;
 import java.io.InputStream;
+import java.sql.DatabaseMetaData;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * 数据库操作工具
@@ -61,6 +66,14 @@ public class DBKit {
             userIDs.add(user.getId());
         }
         return userIDs;
+    }
+
+    /**
+     * 获取所有 NewsLog（浏览历史）
+     * @return NewsLog列表
+     */
+    public static List<NewsLog> getAllNewsLogs() {
+        return newslogMapper.findAllNewsLogs();
     }
 
     /**

@@ -1,5 +1,6 @@
 package casia.isiteam.recommendsystem.main;
 
+import casia.isiteam.recommendsystem.algorithms.cf.UserBasedCollaborativeFilteringRecommender;
 import casia.isiteam.recommendsystem.algorithms.hr.HotRecommender;
 import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
@@ -59,8 +60,10 @@ public class JobSetter {
         // 先用热点新闻推荐器生成今日的热点新闻
         HotRecommender.formTodayTopHotNewsList();
 
-        if (enableCF)
-            logger.info("协同过滤方法 推荐完成！");
+        if (enableCF) {
+            new UserBasedCollaborativeFilteringRecommender().recommend(userIDs);
+            logger.info("基于用户的协同过滤方法 推荐完成！");
+        }
         if (enableCB)
             logger.info("基于内容推荐方法 推荐完成！");
         if (enableHR) {

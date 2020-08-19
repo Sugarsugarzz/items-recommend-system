@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface NewsLogMapper {
 
+    List<NewsLog> findAllNewsLogs();
+
     List<NewsLog> findAllHotNews(@Param("startDate") String startDate);
 
     List<NewsLog> findBrowsedNewsByUser(@Param("userID") Long userID);
