@@ -12,4 +12,6 @@ public interface NewsLogMapper {
     List<NewsLog> findAllHotNews(@Param("startDate") String startDate);
 
     List<NewsLog> findBrowsedNewsByUser(@Param("userID") Long userID);
+
+    List<NewsLog> findBrowsedNewsByDate(String startDate);
 }

@@ -1,5 +1,6 @@
 package casia.isiteam.recommendsystem.main;
 
+import casia.isiteam.recommendsystem.algorithms.cb.ContentBasedRecommender;
 import casia.isiteam.recommendsystem.algorithms.cf.UserBasedCollaborativeFilteringRecommender;
 import casia.isiteam.recommendsystem.algorithms.hr.HotRecommender;
 import casia.isiteam.recommendsystem.utils.ConfigGetKit;
@@ -64,13 +65,14 @@ public class JobSetter {
             new UserBasedCollaborativeFilteringRecommender().recommend(userIDs);
             logger.info("基于用户的协同过滤方法 推荐完成！");
         }
-        if (enableCB)
+        if (enableCB) {
+            new ContentBasedRecommender().recommend(userIDs);
             logger.info("基于内容推荐方法 推荐完成！");
+        }
         if (enableHR) {
             new HotRecommender().recommend(userIDs);
             logger.info("基于热点推荐方法 推荐完成！");
         }
-
 
         logger.info("本次推荐结束于 " + new Date());
     }

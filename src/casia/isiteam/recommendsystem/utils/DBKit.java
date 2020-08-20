@@ -1,27 +1,22 @@
 package casia.isiteam.recommendsystem.utils;
 
 import casia.isiteam.recommendsystem.mapper.NewsLogMapper;
+import casia.isiteam.recommendsystem.mapper.NewsMapper;
 import casia.isiteam.recommendsystem.mapper.RecommendationMapper;
 import casia.isiteam.recommendsystem.mapper.UserMapper;
+import casia.isiteam.recommendsystem.model.News;
 import casia.isiteam.recommendsystem.model.NewsLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
 import casia.isiteam.recommendsystem.model.User;
-import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.session.SqlSessionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.sql.DataSource;
 import java.io.InputStream;
-import java.sql.DatabaseMetaData;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * 数据库操作工具
@@ -32,6 +27,7 @@ public class DBKit {
 
     static SqlSession sqlSession;
     static UserMapper userMapper;
+    static NewsMapper newsMapper;
     static NewsLogMapper newslogMapper;
     static RecommendationMapper recommendationMapper;
 
@@ -43,6 +39,7 @@ public class DBKit {
 
         sqlSession = sqlSessionFactory.openSession();
         userMapper = sqlSession.getMapper(UserMapper.class);
+        newsMapper = sqlSession.getMapper(NewsMapper.class);
         newslogMapper = sqlSession.getMapper(NewsLogMapper.class);
         recommendationMapper = sqlSession.getMapper(RecommendationMapper.class);
     }
@@ -69,6 +66,34 @@ public class DBKit {
     }
 
     /**
+     * 根据用户ID列表，获取用户的偏好关键词列表
+     * @param userIDs 用户ID列表
+     * @return User列表
+     */
+    public static List<User> getUserPrefList(Collection<Long> userIDs) {
+        return userMapper.findPrefListByUserIDs(userIDs);
+    }
+
+    /**
+     * 根据用户ID，更新用户的偏好关键词列表
+     * @param prefList 新的偏好列表
+     * @param userID 用户ID
+     */
+    public static void updateUserPrefList(String prefList, Long userID) {
+        userMapper.updatePrefListByUserID(prefList, userID);
+        sqlSession.commit();
+    }
+
+    /**
+     * 根据新闻ID，获取 News
+     * @param newsIDs 新闻ID列表
+     * @return News列表
+     */
+    public static List<News> getNewsByIDs(Collection<Long> newsIDs) {
+        return newsMapper.findNewsByIDs(newsIDs);
+    }
+
+    /**
      * 获取所有 NewsLog（浏览历史）
      * @return NewsLog列表
      */
@@ -91,12 +116,21 @@ public class DBKit {
     }
 
     /**
-     * 获取用户浏览过的新闻记录
+     * 根据用户ID，获取用户浏览过的新闻记录
      * @param userID 用户ID
-     * @return 浏览过的新闻记录
+     * @return 浏览记录
      */
     public static List<NewsLog> getUserBrowsedNews(Long userID) {
         return newslogMapper.findBrowsedNewsByUser(userID);
+    }
+
+    /**
+     * 获取今日所有用户的浏览记录
+     * @param startDate 日期
+     * @return 浏览记录
+     */
+    public static List<NewsLog> getTodayBrowsedNews(String startDate) {
+        return newslogMapper.findBrowsedNewsByDate(startDate);
     }
 
     /**

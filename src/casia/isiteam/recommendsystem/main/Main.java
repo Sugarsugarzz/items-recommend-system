@@ -21,8 +21,8 @@ public class Main {
             CB - 基于内容推荐 Content-Based
             HR - 基于热点头条推荐 Hot Recommendation
          */
-        boolean enableCF = true;
-        boolean enableCB = false;
+        boolean enableCF = false;
+        boolean enableCB = true;
         boolean enableHR = false;
 
         // 为所有用户执行定时推荐

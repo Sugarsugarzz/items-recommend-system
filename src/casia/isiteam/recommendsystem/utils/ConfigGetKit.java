@@ -36,6 +36,8 @@ public class ConfigGetKit {
         return Integer.parseInt(configGetKit.getProperty(key));
     }
 
-
+    public static double getDouble(String key) {
+        return Double.parseDouble(configGetKit.getProperty(key));
+    }
 
 }

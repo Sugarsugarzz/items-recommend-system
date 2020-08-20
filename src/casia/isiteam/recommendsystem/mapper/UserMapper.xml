@@ -8,4 +8,19 @@
         FROM `users`
     </select>
 
+    <select id="findPrefListByUserIDs" resultType="casia.isiteam.recommendsystem.model.User">
+        SELECT id, pref_list
+        FROM `users`
+        <where>
+            <foreach collection="userIDs" open="id in (" close=")" item="id" separator=",">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+    <update id="updatePrefListByUserID">
+        UPDATE `users`
+        SET pref_list = #{prefList}
+        WHERE id = ${userID}
+    </update>
 </mapper>

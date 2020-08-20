@@ -3,4 +3,13 @@
 
 <mapper namespace="casia.isiteam.recommendsystem.mapper.NewsMapper">
 
+    <select id="findNewsByIDs" resultType="casia.isiteam.recommendsystem.model.News">
+        SELECT id, title, content, module_id
+        FROM news
+        <where>
+            <foreach collection="newsIDs" open="id in (" close=")" item="id" separator=",">
+                ${id}
+            </foreach>
+        </where>
+    </select>
 </mapper>

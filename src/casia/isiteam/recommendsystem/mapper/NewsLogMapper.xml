@@ -21,4 +21,10 @@
         FROM newslogs
         WHERE user_id = ${userID}
     </select>
+
+    <select id="findBrowsedNewsByDate" resultType="casia.isiteam.recommendsystem.model.NewsLog">
+        SELECT *
+        FROM newslogs
+        WHERE view_time > #{startDate}
+    </select>
 </mapper>
