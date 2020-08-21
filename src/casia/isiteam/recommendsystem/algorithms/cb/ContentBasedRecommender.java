@@ -11,7 +11,6 @@ import java.util.List;
 /**
  * 基于内容的推荐算法实现
  *  思路：提取新闻的关键词列表（TF-IDF），以及每个用户的偏好关键词列表，计算关键词相似度计算，取最相似的 N 个新闻推荐给用户。
- *
  */
 public class ContentBasedRecommender implements RecommendAlgorithm {
 
@@ -35,9 +34,9 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
         int count = 0;
 
         try {
-            // 用户偏好关键词列表衰减更新 + 用户浏览历史记录更新
+            // 用户偏好衰减 + 根据用户浏览历史更新用户偏好
             new UserPrefRefresher().refresher(userIDs);
-
+            logger.info("用户偏好更新完成（衰减+浏览历史） at " + new Date());
             // 未实现
 
 

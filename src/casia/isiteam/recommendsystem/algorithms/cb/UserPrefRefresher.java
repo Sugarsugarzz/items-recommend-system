@@ -8,7 +8,7 @@ import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
+import org.ansj.app.keyword.Keyword;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,26 +38,47 @@ public class UserPrefRefresher {
         decayUserPref(userIDs);
 
         // 当日用户浏览记录  用户ID - 浏览新闻的ID列表
-        Map<Long, ArrayList<Long>> todayBrowsedMap = getTodayBrowsedMap();
-        // 仅对当日有浏览记录的用户偏好进行更新；当日无浏览记录的，无需后面的更新步骤
-        if (todayBrowsedMap.size() == 0)
+        Map<Long, ArrayList<Long>> userTodayBrowsedMap = getTodayBrowsedMap();
+        // 仅对当日有浏览记录的用户偏好进行更新；当日无用户浏览记录，则无需后面的更新步骤
+        if (userTodayBrowsedMap.size() == 0)
             return;
 
         // 获取当日活跃用户的偏好  用户ID - 偏好列表 pre_list
-        Map<Long, String> userPrefListMap = getUserPreListMap(todayBrowsedMap.keySet());
-
+        Map<Long, String> userPrefListMap = getUserPreListMap(userTodayBrowsedMap.keySet());
         // 获取 新闻ID - 新闻模块ID 与 新闻ID - 新闻关键词列表（两种）
         Map<String, Object> newsMap = getNewsTFIDFMap();
-
         // 遍历用户浏览记录，更新用户偏好关键词列表
-        // 未实现
+        // 外层循环：对每个用户
+        for (Long userID : userTodayBrowsedMap.keySet()) {
 
+            // 获取用户偏好
+            Map<String, Object> map = JSONObject.parseObject(userPrefListMap.get(userID));
+            // 内层循环：遍历用户看过的每个新闻，将新闻的关键词列表和TD-IDF值更新到用户偏好中
+            ArrayList<Long> newsIDs = userTodayBrowsedMap.get(userID);
+            for (Long newsID : newsIDs) {
+                Long moduleID = (Long) newsMap.get(newsID + "-ModuleID");
+                // 获取该用户在该某模块下的偏好
+                Map<String, Object> moduleMap = (Map<String, Object>) map.get(moduleID.toString());
+                // 获取新闻的 关键词和TF-IDF值
+                List<Keyword> keywords = (List<Keyword>) newsMap.get(newsID.toString());
+                for (Keyword keyword : keywords) {
+                    String word = keyword.getName();
+                    if (moduleMap.containsKey(word)) {
+                        moduleMap.put(word, Double.parseDouble(moduleMap.get(word).toString()) + keyword.getScore());
+                    } else {
+                        moduleMap.put(word, keyword.getScore());
+                    }
+                }
+            }
 
+            // 更新到 userPrefListMap
+            userPrefListMap.put(userID, JSON.toJSONString(map));
+        }
 
         // 将更新好的偏好关键词列表存入表中
-        // 未实现
-
-
+        for (Long userID : userPrefListMap.keySet()) {
+            DBKit.updateUserPrefList(userPrefListMap.get(userID), userID);
+        }
     }
 
     /**
@@ -69,7 +90,6 @@ public class UserPrefRefresher {
         List<User> users = DBKit.getUserPrefList(userIDs);
 
         for (User user : users) {
-
             // key - 新闻模块id， value - 关键词偏好列表Map
             Map<String, Object> map = JSONObject.parseObject(user.getPref_list());
 
