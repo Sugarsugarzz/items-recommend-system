@@ -2,6 +2,7 @@ package casia.isiteam.recommendsystem.utils;
 
 import casia.isiteam.recommendsystem.model.NewsLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
+import casia.isiteam.recommendsystem.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,6 +59,20 @@ public class RecommendKit {
     }
 
     /**
+     * 获取 用户与偏好列表 的键值对
+     * @param userIDs 用户ID列表
+     */
+    public static Map<Long, String> getUserPreListMap(Collection<Long> userIDs) {
+        Map<Long, String> map = new HashMap<>();
+        List<User> users = DBKit.getUserPrefList(userIDs);
+        for (User user : users) {
+            map.put(user.getId(), user.getPref_list());
+        }
+
+        return map;
+    }
+
+    /**
      * 过滤用户已经看过的新闻
      * @param recNewsList 新闻推荐列表
      * @param userID 用户ID
@@ -91,6 +106,9 @@ public class RecommendKit {
      * @param recNum 最大推荐数量限制
      */
     public static void removeOverSizeNews(Set<Long> toBeRecommended, int recNum) {
+
+        if (toBeRecommended.size() <= recNum)
+            return;
 
         int i = 0;
         Iterator<Long> iterator = toBeRecommended.iterator();

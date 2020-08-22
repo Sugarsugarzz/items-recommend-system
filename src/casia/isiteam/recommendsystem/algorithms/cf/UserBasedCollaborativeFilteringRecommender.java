@@ -92,7 +92,7 @@ public class UserBasedCollaborativeFilteringRecommender implements RecommendAlgo
                     RecommendKit.removeOverSizeNews(toBeRecommended, recNum);
                 }
 
-                // 将本次推荐的新闻，存入表中
+                // 将本次推荐的结果，存入表中
                 RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CF);
 
                 System.out.println("================================================");

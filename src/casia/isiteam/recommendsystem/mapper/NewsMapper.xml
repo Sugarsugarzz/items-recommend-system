@@ -12,4 +12,10 @@
             </foreach>
         </where>
     </select>
+
+    <select id="findNewsByPublishTime" resultType="casia.isiteam.recommendsystem.model.News">
+        SELECT id, title, content, module_id
+        FROM news
+        WHERE news_time > #{startDate}
+    </select>
 </mapper>

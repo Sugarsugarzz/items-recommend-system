@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface NewsMapper {
     List<News> findNewsByIDs(@Param("newsIDs") Collection<Long> newsIDs);
+
+    List<News> findNewsByPublishTime(@Param("startDate") String startDate);
 }

@@ -44,7 +44,7 @@ public class UserPrefRefresher {
             return;
 
         // 获取当日活跃用户的偏好  用户ID - 偏好列表 pre_list
-        Map<Long, String> userPrefListMap = getUserPreListMap(userTodayBrowsedMap.keySet());
+        Map<Long, String> userPrefListMap = RecommendKit.getUserPreListMap(userTodayBrowsedMap.keySet());
         // 获取 新闻ID - 新闻模块ID 与 新闻ID - 新闻关键词列表（两种）
         Map<String, Object> newsMap = getNewsTFIDFMap();
         // 遍历用户浏览记录，更新用户偏好关键词列表
@@ -131,20 +131,6 @@ public class UserPrefRefresher {
                 map.put(newsLog.getUser_id(), new ArrayList<>());
             }
             map.get(newsLog.getUser_id()).add(newsLog.getNews_id());
-        }
-
-        return map;
-    }
-
-    /**
-     * 获取 用户与偏好列表 的键值对
-     * @param userIDs 用户ID列表
-     */
-    public Map<Long, String> getUserPreListMap(Collection<Long> userIDs) {
-        Map<Long, String> map = new HashMap<>();
-        List<User> users = DBKit.getUserPrefList(userIDs);
-        for (User user : users) {
-            map.put(user.getId(), user.getPref_list());
         }
 
         return map;

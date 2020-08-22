@@ -94,6 +94,15 @@ public class DBKit {
     }
 
     /**
+     * 根据起始发布日期，获取 News
+     * @param startDate 起始日期
+     * @return News列表
+     */
+    public static List<News> getNewsByPublishTime(String startDate) {
+        return newsMapper.findNewsByPublishTime(startDate);
+    }
+
+    /**
      * 获取所有 NewsLog（浏览历史）
      * @return NewsLog列表
      */
