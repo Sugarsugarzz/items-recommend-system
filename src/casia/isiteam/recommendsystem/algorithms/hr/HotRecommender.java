@@ -18,9 +18,9 @@ public class HotRecommender implements RecommendAlgorithm {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // 热点新闻的有效时间
-    private static int beforeDays = ConfigGetKit.getInt("hotBeforeDays");
+    private static final int beforeDays = ConfigGetKit.getInt("hotBeforeDays");
     // 推荐系统每日为每位用户生成的推荐结果的总数，当CF与CB算法生成的推荐结果不足此数时，由该算法补充
-    private static int TOTAL_REC_NUM = ConfigGetKit.getInt("totalRecommendation");
+    private static final int totalRecNum = ConfigGetKit.getInt("totalNum");
     // 将每天生成的 热点新闻ID，按照新闻的热点程度，从高到低放入List
     private static List<Long> topHotNewsList = new ArrayList<>();
 
@@ -39,12 +39,12 @@ public class HotRecommender implements RecommendAlgorithm {
         // 获取当日时间戳
         Timestamp todayTimestamp = getCertainTimestamp(0, 0, 0);
         for (Long userID : userIDs) {
-            // 获取当日已经用CF和CB算法为当前用户推荐的新闻数量，若数量达不到单日最低推荐数量要求，则用热点新闻补充
+            // 获取当日已经用 CF 和 CB 算法为当前用户推荐的新闻数量，若数量达不到单日最低推荐数量要求，则用热点新闻补充
             long todayRecCount = DBKit.getUserTodayRecommendationCount(todayTimestamp, userID);
-            System.out.println("用户ID：" + userID + "\n当日已向用户推荐新闻： " + todayRecCount + " 条");
+            System.out.println("用户ID：" + userID + "\n当日已向该用户推荐新闻： " + todayRecCount + " 条");
 
             // 计算差值（即需要用hr算法推荐的新闻数量）
-            int delta = TOTAL_REC_NUM - (int) todayRecCount;
+            int delta = totalRecNum - (int) todayRecCount;
             System.out.println("需要热点推荐算法补充的新闻数量为： " + delta + " 条");
 
             // 初始化最终推荐新闻列表
@@ -57,7 +57,7 @@ public class HotRecommender implements RecommendAlgorithm {
 
             // 过滤用户已浏览的新闻
             RecommendKit.filterBrowsedNews(toBeRecommended, userID);
-            // 过滤已向用户推荐过的新闻
+            // 过滤已推荐过的新闻
             RecommendKit.filterRecommendedNews(toBeRecommended, userID);
             // 将本次推荐的新闻，存入表中
             RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.HR);
@@ -77,22 +77,11 @@ public class HotRecommender implements RecommendAlgorithm {
 
         // 清空热点新闻List
         topHotNewsList.clear();
-
         // 根据有效起始日期，获取热点新闻ID列表
         List<Long> hotNewsIDs = DBKit.getHotNewsIDs(RecommendKit.getInRecDate(beforeDays));
-
         // 将ID添加到热点新闻List中
         topHotNewsList.addAll(hotNewsIDs);
     }
-
-
-    /**
-     * topHotNewsList 的 Getter
-     */
-    public static List<Long> getTopHotNewsList() {
-        return topHotNewsList;
-    }
-
 
     /**
      * 获取特定的时间戳
@@ -103,19 +92,6 @@ public class HotRecommender implements RecommendAlgorithm {
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, second);
         return new Timestamp(calendar.getTime().getTime());
-    }
-
-    public static void main(String[] args) {
-
-        formTodayTopHotNewsList();
-        System.out.println("打印一下 tophotnewslist");
-        for (Long hot : getTopHotNewsList()) {
-            System.out.print(hot + " - ");
-        }
-        new HotRecommender().recommend(DBKit.getAllUserIDs());
-
-
-
     }
 
 }

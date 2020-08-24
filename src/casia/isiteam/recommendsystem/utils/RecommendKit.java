@@ -79,6 +79,9 @@ public class RecommendKit {
      */
     public static void filterBrowsedNews(Collection<Long> recNewsList, Long userID) {
 
+        if (recNewsList.size() == 0)
+            return;
+
         List<NewsLog> userBrowsedNews = DBKit.getUserBrowsedNews(userID);
         for (NewsLog newsLog : userBrowsedNews) {
             System.out.println("用户浏览过的新闻id - " + newsLog.getNews_id() );
@@ -92,6 +95,9 @@ public class RecommendKit {
      * @param userID 用户ID
      */
     public static void filterRecommendedNews(Collection<Long> recNewsList, Long userID) {
+
+        if (recNewsList.size() == 0)
+            return;
 
         List<Recommendation> userRecommendedNews = DBKit.getUserRecommendedNews(userID, getInRecDate());
         for (Recommendation recommendation : userRecommendedNews) {

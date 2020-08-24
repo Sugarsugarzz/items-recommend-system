@@ -21,21 +21,23 @@ public class Main {
             CB - 基于内容推荐 Content-Based
             HR - 基于热点头条推荐 Hot Recommendation
          */
-        boolean enableCF = false;
-        boolean enableCB = true;
-        boolean enableHR = false;
+        boolean isEnableCF = true;
+        boolean isEnableCB = true;
+        boolean isEnableHR = true;
 
-        // 为所有用户执行定时推荐
-
+        logger.info("算法启用状态："
+                + "基于用户的协同过滤 - " + isEnableCF + " | "
+                + "基于内容推荐 - " + isEnableCB + " | "
+                + "基于热点头条推荐 - " + isEnableHR);
 
         // 为所有用户执行一次推荐
-        new JobSetter(enableCF, enableCB, enableHR).executeInstantJobForAllUsers();
+        new JobSetter(isEnableCF, isEnableCB, isEnableHR).executeInstantJobForAllUsers();
 
         // 为特定用户执行一次推荐
 //        List<Long> users = new ArrayList<>();
 //        users.add(1L);
 //        users.add(2L);
-//        new JobSetter(enableCF, enableCB, enableHR).executeInstantJobForCertainUsers(users);
+//        new JobSetter(isEnableCF, isEnableCB, isEnableHR).executeInstantJobForCertainUsers(users);
 
     }
 }

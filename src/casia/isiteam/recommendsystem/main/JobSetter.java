@@ -18,23 +18,21 @@ public class JobSetter {
 
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
-    private boolean enableCF;
-    private boolean enableCB;
-    private boolean enableHR;
+    boolean isEnableCF, isEnableCB, isEnableHR;
 
     /**
      * 构造方法
-     * @param enableCF 是否启动协同过滤
-     * @param enableCB 是否启动基于内容推荐
-     * @param enableHR 是否启动热点头条推荐
+     * @param isEnableCF 是否启动协同过滤
+     * @param isEnableCB 是否启动基于内容推荐
+     * @param isEnableHR 是否启动热点头条推荐
      */
-    public JobSetter(boolean enableCF, boolean enableCB, boolean enableHR) {
+    public JobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR) {
         // 加载配置文件
         ConfigGetKit.loadProperties("config");
         // 初始化算法选择
-        this.enableCF = enableCF;
-        this.enableCB = enableCB;
-        this.enableHR = enableHR;
+        this.isEnableCF = isEnableCF;
+        this.isEnableCB = isEnableCB;
+        this.isEnableHR = isEnableHR;
     }
 
     /**
@@ -52,7 +50,6 @@ public class JobSetter {
         executeInstantJob(DBKit.getAllUserIDs());
     }
 
-
     /**
      * 执行一次推荐
      * @param userIDs 用户id列表
@@ -61,15 +58,15 @@ public class JobSetter {
         // 先用热点新闻推荐器生成今日的热点新闻
         HotRecommender.formTodayTopHotNewsList();
 
-        if (enableCF) {
+        if (isEnableCF) {
             new UserBasedCollaborativeFilteringRecommender().recommend(userIDs);
             logger.info("基于用户的协同过滤方法 推荐完成！");
         }
-        if (enableCB) {
+        if (isEnableCB) {
             new ContentBasedRecommender().recommend(userIDs);
             logger.info("基于内容推荐方法 推荐完成！");
         }
-        if (enableHR) {
+        if (isEnableHR) {
             new HotRecommender().recommend(userIDs);
             logger.info("基于热点推荐方法 推荐完成！");
         }

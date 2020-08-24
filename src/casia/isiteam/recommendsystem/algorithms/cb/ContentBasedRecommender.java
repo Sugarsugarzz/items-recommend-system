@@ -7,7 +7,6 @@ import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import com.alibaba.fastjson.JSONObject;
 import org.ansj.app.keyword.Keyword;
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,10 +61,11 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
             for (Long userID : userIDs) {
                 // 获取用户偏好
                 Map<String, Object> map = JSONObject.parseObject(userPrefListMap.get(userID));
-                // 暂存与用户相匹配的新闻，新闻ID - 匹配值 Map
+                // 暂存与用户偏好相匹配的新闻，新闻ID - 匹配值 Map
                 Map<Long, Double> tempMatchMap = new LinkedHashMap<>();
                 // 遍历新闻，获取新闻与用户的匹配值
                 for (Long newsID : newsKeywordsMap.keySet()) {
+                    // 获取用于在新闻所属模块的偏好
                     Long moduleID = newsModuleMap.get(newsID);
                     Map<String, Object> moduleMap = (Map<String, Object>) map.get(moduleID.toString());
                     // 如果用户在该模块下的偏好不为空
@@ -76,26 +76,23 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
 
                 // 去除匹配值为 0 的新闻
                 removeZeroItem(tempMatchMap);
-                // 对新闻进行过滤，并存入表
-                // 未全部完成
-                if (!tempMatchMap.isEmpty()) {
-                    // 根据匹配值大小，从大到小排序
-                    tempMatchMap = sortMapByValue(tempMatchMap);
-                    // 初始化最终推荐新闻列表
-                    Set<Long> toBeRecommended = tempMatchMap.keySet();
-                    System.out.println("用户ID：" + userID + "\n本次基于内容推荐为用户生成：" + toBeRecommended.size() + " 条");
-                    // 过滤已推荐过的新闻
-                    RecommendKit.filterRecommendedNews(toBeRecommended, userID);
-                    // 过滤用户已经看过的新闻
-                    RecommendKit.filterBrowsedNews(toBeRecommended, userID);
-                    // 去除超出推荐数量的新闻
-                    RecommendKit.removeOverSizeNews(toBeRecommended, recNum);
-                    // 将本次推荐结果存入表中
-                    RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CB);
+                // 根据匹配值大小，从大到小排序
+                tempMatchMap = sortMapByValue(tempMatchMap);
+                // 初始化最终推荐新闻列表
+                Set<Long> toBeRecommended = tempMatchMap.keySet();
+                System.out.println("用户ID：" + userID + "\n本次基于内容推荐为用户生成：" + toBeRecommended.size() + " 条");
+                // 过滤已推荐过的新闻
+                RecommendKit.filterRecommendedNews(toBeRecommended, userID);
+                // 过滤用户已浏览的新闻
+                RecommendKit.filterBrowsedNews(toBeRecommended, userID);
+                // 去除超出推荐数量的新闻
+                RecommendKit.removeOverSizeNews(toBeRecommended, recNum);
+                // 将本次推荐结果存入表中
+                RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CB);
 
-                    System.out.println("================================================");
-                    count += toBeRecommended.size();
-                }
+                System.out.println("================================================");
+                count += toBeRecommended.size();
+
             }
 
         } catch (Exception e) {
@@ -138,6 +135,9 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
      * 根据 Value 对 Map 排序
      */
     private Map<Long, Double> sortMapByValue(Map<Long, Double> map) {
+
+        if (map.size() == 0)
+            return map;
 
         List<Map.Entry<Long, Double>> list = new ArrayList<>(map.entrySet());
         list.sort((o1, o2) -> (int) (o2.getValue() - o1.getValue()));

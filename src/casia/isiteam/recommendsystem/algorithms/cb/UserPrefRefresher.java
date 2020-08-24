@@ -47,8 +47,9 @@ public class UserPrefRefresher {
         Map<Long, String> userPrefListMap = RecommendKit.getUserPreListMap(userTodayBrowsedMap.keySet());
         // 获取 新闻ID - 新闻模块ID 与 新闻ID - 新闻关键词列表（两种）
         Map<String, Object> newsMap = getNewsTFIDFMap();
+
         // 遍历用户浏览记录，更新用户偏好关键词列表
-        // 外层循环：对每个用户
+        // 外层循环：针对每个用户
         for (Long userID : userTodayBrowsedMap.keySet()) {
 
             // 获取用户偏好
@@ -71,7 +72,7 @@ public class UserPrefRefresher {
                 }
             }
 
-            // 更新到 userPrefListMap
+            // 更新 userPrefListMap 的 pref_list
             userPrefListMap.put(userID, JSON.toJSONString(map));
         }
 
@@ -96,19 +97,20 @@ public class UserPrefRefresher {
             // 待删除的关键词列表
             List<String> keywordsToDelete = new ArrayList<>();
 
-            for (String module : map.keySet()) {
+            for (String moduleID : map.keySet()) {
                 // key - 关键词， value - TF-IDF值
-                Map<String, Object> keywordsMap = (Map<String, Object>) map.get(module);
+                Map<String, Object> keywordsMap = (Map<String, Object>) map.get(moduleID);
                 // 更新每个关键词衰减后的TF-IDF值
-                for (String k : keywordsMap.keySet()) {
-                    double result = Double.parseDouble(keywordsMap.get(k).toString()) * decayNum;
+                for (String key : keywordsMap.keySet()) {
+                    double result = Double.parseDouble(keywordsMap.get(key).toString()) * decayNum;
+                    // 剔除低于阈值的关键词
                     if (result < 15) {
-                        keywordsToDelete.add(k);
+                        keywordsToDelete.add(key);
                     } else {
-                        keywordsMap.put(k, result);
+                        keywordsMap.put(key, result);
                     }
                 }
-                // 剔除低于阈值的关键词
+
                 for (String keyword : keywordsToDelete) {
                     keywordsMap.remove(keyword);
                 }
