@@ -37,13 +37,13 @@ public class HotRecommender implements RecommendAlgorithm {
         int count = 0;
 
         // 获取当日时间戳
-        Timestamp todayTimestamp = getCertainTimestamp(0, 0, 0);
+        Timestamp todayTimestamp = RecommendKit.getCertainTimestamp(0, 0, 0);
         for (Long userID : userIDs) {
             // 获取当日已经用 CF 和 CB 算法为当前用户推荐的新闻数量，若数量达不到单日最低推荐数量要求，则用热点新闻补充
             long todayRecCount = DBKit.getUserTodayRecommendationCount(todayTimestamp, userID);
             System.out.println("用户ID：" + userID + "\n当日已向该用户推荐新闻： " + todayRecCount + " 条");
 
-            // 计算差值（即需要用hr算法推荐的新闻数量）
+            // 计算差值（即需要用HR算法推荐的新闻数量）
             int delta = totalRecNum - (int) todayRecCount;
             System.out.println("需要热点推荐算法补充的新闻数量为： " + delta + " 条");
 
@@ -61,6 +61,7 @@ public class HotRecommender implements RecommendAlgorithm {
             RecommendKit.filterRecommendedNews(toBeRecommended, userID);
             // 将本次推荐的新闻，存入表中
             RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.HR);
+            logger.info("成功推荐列表：" + toBeRecommended);
 
             System.out.println("================================================");
             count += toBeRecommended.size();
@@ -81,17 +82,6 @@ public class HotRecommender implements RecommendAlgorithm {
         List<Long> hotNewsIDs = DBKit.getHotNewsIDs(RecommendKit.getInRecDate(beforeDays));
         // 将ID添加到热点新闻List中
         topHotNewsList.addAll(hotNewsIDs);
-    }
-
-    /**
-     * 获取特定的时间戳
-     */
-    private static Timestamp getCertainTimestamp(int hour, int minute, int second) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, second);
-        return new Timestamp(calendar.getTime().getTime());
     }
 
 }

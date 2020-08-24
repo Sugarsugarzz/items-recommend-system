@@ -6,12 +6,14 @@ import java.util.List;
 
 public interface RecommendAlgorithm {
 
-    // 协同过滤
+    // 基于用户的协同过滤
     int CF = 0;
     // 基于内容推荐
     int CB = 1;
     // 基于热点推荐
     int HR = 2;
+    // 随机推荐
+    int RR = 3;
 
     /**
      * 针对所有用户返回推荐结果

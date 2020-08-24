@@ -89,6 +89,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
                 RecommendKit.removeOverSizeNews(toBeRecommended, recNum);
                 // 将本次推荐结果存入表中
                 RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CB);
+                logger.info("成功推荐列表：" + toBeRecommended);
 
                 System.out.println("================================================");
                 count += toBeRecommended.size();

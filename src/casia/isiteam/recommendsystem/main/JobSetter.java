@@ -3,6 +3,7 @@ package casia.isiteam.recommendsystem.main;
 import casia.isiteam.recommendsystem.algorithms.cb.ContentBasedRecommender;
 import casia.isiteam.recommendsystem.algorithms.cf.UserBasedCollaborativeFilteringRecommender;
 import casia.isiteam.recommendsystem.algorithms.hr.HotRecommender;
+import casia.isiteam.recommendsystem.algorithms.random.RandomRecommender;
 import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +19,7 @@ public class JobSetter {
 
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
-    boolean isEnableCF, isEnableCB, isEnableHR;
+    boolean isEnableCF, isEnableCB, isEnableHR, isEnableRR;
 
     /**
      * 构造方法
@@ -26,13 +27,14 @@ public class JobSetter {
      * @param isEnableCB 是否启动基于内容推荐
      * @param isEnableHR 是否启动热点头条推荐
      */
-    public JobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR) {
+    public JobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR, boolean isEnableRR) {
         // 加载配置文件
         ConfigGetKit.loadProperties("config");
         // 初始化算法选择
         this.isEnableCF = isEnableCF;
         this.isEnableCB = isEnableCB;
         this.isEnableHR = isEnableHR;
+        this.isEnableRR = isEnableRR;
     }
 
     /**
@@ -69,6 +71,10 @@ public class JobSetter {
         if (isEnableHR) {
             new HotRecommender().recommend(userIDs);
             logger.info("基于热点推荐方法 推荐完成！");
+        }
+        if (isEnableRR) {
+            new RandomRecommender().recommend(userIDs);
+            logger.info("随机补充推荐方法 推荐完成！");
         }
 
         logger.info("本次推荐结束于 " + new Date());

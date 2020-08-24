@@ -10,4 +10,6 @@ public interface NewsMapper {
     List<News> findNewsByIDs(@Param("newsIDs") Collection<Long> newsIDs);
 
     List<News> findNewsByPublishTime(@Param("startDate") String startDate);
+
+    List<News> findGroupNewsByPublishTime(@Param("startDate") String startDate);
 }

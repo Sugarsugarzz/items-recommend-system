@@ -18,4 +18,11 @@
         FROM news
         WHERE news_time > #{startDate}
     </select>
+
+    <select id="findGroupNewsByPublishTime" resultType="casia.isiteam.recommendsystem.model.News">
+        SELECT n1.* FROM news n1
+        WHERE EXISTS (SELECT COUNT(*) + 1 FROM news n2 WHERE n2.news_time > #{startDate} AND n2.module_id = n1.module_id AND n2.id > n1.id HAVING (COUNT(*) + 1) &lt;= 5)
+        AND n1.news_time > #{startDate}
+        ORDER BY n1.module_id
+    </select>
 </mapper>

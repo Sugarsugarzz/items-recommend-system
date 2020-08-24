@@ -103,6 +103,15 @@ public class DBKit {
     }
 
     /**
+     * 根据有效起始日期，从各领域抽取一些 News
+     * @param startDate 有效起始日期
+     * @return News列表
+     */
+    public static List<News> getGroupNewsByPublishTime(String startDate) {
+        return newsMapper.findGroupNewsByPublishTime(startDate);
+    }
+
+    /**
      * 获取所有 NewsLog（浏览历史）
      * @return NewsLog列表
      */

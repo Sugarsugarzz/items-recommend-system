@@ -48,6 +48,17 @@ public class RecommendKit {
     }
 
     /**
+     * 获取特定的时间戳
+     */
+    public static Timestamp getCertainTimestamp(int hour, int minute, int second) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+        return new Timestamp(calendar.getTime().getTime());
+    }
+
+    /**
      * 在当日基础上增加/减少天数后的日期时间戳，便于推荐算法在比较时间前后时调用
      * @param beforeDays 增加/减少的天数
      * @return 日期时间戳
