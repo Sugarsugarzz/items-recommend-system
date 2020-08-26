@@ -1,10 +1,11 @@
-package casia.isiteam.recommendsystem.algorithms.cb;
+package casia.isiteam.recommendsystem.algorithms.toutiao.cb;
 
 import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.Item;
 import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
+import casia.isiteam.recommendsystem.utils.TFIDF;
 import com.alibaba.fastjson.JSONObject;
 import org.ansj.app.keyword.Keyword;
 import org.apache.logging.log4j.LogManager;
@@ -82,13 +83,13 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
                 Set<Long> toBeRecommended = tempMatchMap.keySet();
                 System.out.println("用户ID：" + userID + "\n本次基于内容推荐为用户生成：" + toBeRecommended.size() + " 条");
                 // 过滤已推荐过的信息项
-                RecommendKit.filterRecommendedItems(toBeRecommended, userID);
+                RecommendKit.filterRecommendedItems(toBeRecommended, userID, RecommendAlgorithm.TOUTIAO);
                 // 过滤用户已浏览的信息项
-                RecommendKit.filterBrowsedItems(toBeRecommended, userID);
+                RecommendKit.filterBrowsedItems(toBeRecommended, userID, RecommendAlgorithm.TOUTIAO);
                 // 去除超出推荐数量的信息项
                 RecommendKit.removeOverSizeItems(toBeRecommended, recNum);
                 // 将本次推荐结果存入表中
-                RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CB);
+                RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CB, RecommendAlgorithm.TOUTIAO);
                 logger.info("本次向用户 " + userID +" 成功推荐：" + toBeRecommended);
 
                 System.out.println("================================================");

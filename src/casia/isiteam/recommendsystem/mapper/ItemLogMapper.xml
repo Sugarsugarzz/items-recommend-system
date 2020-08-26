@@ -6,13 +6,13 @@
     <select id="findAllItemLogs" resultType="casia.isiteam.recommendsystem.model.ItemLog">
         SELECT user_id, ref_data_id, insert_time
         FROM user_read_record
-        WHERE info_type = 1
+        WHERE info_type = ${infoType}
     </select>
 
     <select id="findAllHotItems" resultType="casia.isiteam.recommendsystem.model.ItemLog">
         SELECT ref_data_id, COUNT(*) AS visitCount
         FROM user_read_record
-        WHERE insert_time > #{startDate} and info_type = 1
+        WHERE insert_time > #{startDate} and info_type = ${infoType}
         GROUP BY ref_data_id
         ORDER BY visitCount DESC
     </select>
@@ -20,12 +20,12 @@
     <select id="findBrowsedItemsByUser" resultType="casia.isiteam.recommendsystem.model.ItemLog">
         SELECT ref_data_id
         FROM user_read_record
-        WHERE user_id = ${userID} and info_type = 1
+        WHERE user_id = ${userID} and info_type = ${infoType}
     </select>
 
     <select id="findBrowsedItemsByDate" resultType="casia.isiteam.recommendsystem.model.ItemLog">
         SELECT user_id, ref_data_id
         FROM user_read_record
-        WHERE insert_time > #{startDate} and info_type = 1
+        WHERE insert_time > #{startDate} and info_type = ${infoType}
     </select>
 </mapper>

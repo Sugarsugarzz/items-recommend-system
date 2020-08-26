@@ -1,4 +1,4 @@
-package casia.isiteam.recommendsystem.algorithms.random;
+package casia.isiteam.recommendsystem.algorithms.toutiao.random;
 
 import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.Item;
@@ -38,7 +38,7 @@ public class RandomRecommender implements RecommendAlgorithm {
         Timestamp todayTimestamp = RecommendKit.getCertainTimestamp(0, 0, 0);
         for (Long userID : userIDs) {
             // 获取当日已经用其他三种算法为当前用户推荐的数量，若数量达不到推荐总数要求，则随机补充推荐
-            long todayRecCount = DBKit.getUserTodayRecommendationCount(todayTimestamp, userID);
+            long todayRecCount = DBKit.getRecommendationCountByUserAndTime(todayTimestamp, userID, RecommendAlgorithm.TOUTIAO);
             System.out.println("用户ID：" + userID + "\n当日已向该用户推荐信息项： " + todayRecCount + " 条");
 
             // 计算差值（即需要用RR算法推荐的信息项数量）
@@ -57,11 +57,11 @@ public class RandomRecommender implements RecommendAlgorithm {
             }
 
             // 过滤用户已浏览的信息项
-            RecommendKit.filterBrowsedItems(toBeRecommended, userID);
+            RecommendKit.filterBrowsedItems(toBeRecommended, userID, RecommendAlgorithm.TOUTIAO);
             // 过滤已推荐过的信息项
-            RecommendKit.filterRecommendedItems(toBeRecommended, userID);
+            RecommendKit.filterRecommendedItems(toBeRecommended, userID, RecommendAlgorithm.TOUTIAO);
             // 将本次推荐的信息项，存入表中
-            RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.RR);
+            RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.RR, RecommendAlgorithm.TOUTIAO);
             logger.info("本次向用户 " + userID +" 成功推荐：" + toBeRecommended);
 
             System.out.println("================================================");

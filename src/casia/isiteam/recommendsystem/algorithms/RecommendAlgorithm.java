@@ -15,6 +15,11 @@ public interface RecommendAlgorithm {
     // 随机推荐
     int RR = 3;
 
+    // 头条
+    int TOUTIAO = 1;
+    // 百科
+    int WIKI = 2;
+
     /**
      * 针对所有用户返回推荐结果
      */

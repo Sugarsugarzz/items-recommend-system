@@ -1,5 +1,6 @@
 package casia.isiteam.recommendsystem.utils;
 
+import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
 import casia.isiteam.recommendsystem.model.User;
@@ -103,13 +104,14 @@ public class RecommendKit {
      * 过滤用户已经看过的信息项
      * @param recItemList 信息项推荐列表
      * @param userID 用户ID
+     * @param infoType 头条 or 百科
      */
-    public static void filterBrowsedItems(Collection<Long> recItemList, Long userID) {
+    public static void filterBrowsedItems(Collection<Long> recItemList, Long userID, int infoType) {
 
         if (recItemList.size() == 0)
             return;
 
-        List<ItemLog> userBrowsedItems = DBKit.getUserBrowsedItems(userID);
+        List<ItemLog> userBrowsedItems = DBKit.getUserBrowsedItems(userID, infoType);
         for (ItemLog itemLog : userBrowsedItems) {
             System.out.println("用户浏览过的信息项id - " + itemLog.getRef_data_id());
             recItemList.remove(itemLog.getRef_data_id());
@@ -120,13 +122,14 @@ public class RecommendKit {
      * 过滤已向用户推荐过的信息项
      * @param recItemList 信息项推荐列表
      * @param userID 用户ID
+     * @param infoType 头条 or 百科
      */
-    public static void filterRecommendedItems(Collection<Long> recItemList, Long userID) {
+    public static void filterRecommendedItems(Collection<Long> recItemList, Long userID, int infoType) {
 
         if (recItemList.size() == 0)
             return;
 
-        List<Recommendation> userRecommendedItems = DBKit.getUserRecommendedItems(userID, getInRecDate());
+        List<Recommendation> userRecommendedItems = DBKit.getUserRecommendedItems(userID, getInRecDate(), infoType);
         for (Recommendation recommendation : userRecommendedItems) {
             System.out.println("已向用户推荐过的信息项id - " + recommendation.getItem_id());
             recItemList.remove(recommendation.getItem_id());
@@ -159,12 +162,13 @@ public class RecommendKit {
      * @param userID 用户ID
      * @param recommendItemIDs 待存入的推荐信息项ID列表
      * @param algorithm_type 标注推荐结果来自哪个推荐算法
+     * @param infoType 头条 or 百科
      */
-    public static void insertRecommendations(Long userID, Collection<Long> recommendItemIDs, int algorithm_type) {
+    public static void insertRecommendations(Long userID, Collection<Long> recommendItemIDs, int algorithm_type, int infoType) {
 
         for (Long recommendItemID : recommendItemIDs) {
             System.out.println("本次向用户推荐的信息项id - " + recommendItemID);
-            DBKit.saveRecommendation(userID, recommendItemID, algorithm_type);
+            DBKit.saveRecommendation(userID, recommendItemID, algorithm_type, infoType);
         }
     }
 }

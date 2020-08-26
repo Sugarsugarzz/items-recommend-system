@@ -3,21 +3,21 @@
 
 <mapper namespace="casia.isiteam.recommendsystem.mapper.RecommendationMapper">
 
-    <select id="findTodayRecommendationCountByUser" resultType="long">
+    <select id="findRecommendationCountByUserAndTime" resultType="long">
         SELECT COUNT(*)
         FROM recommendations
-        WHERE derive_time > #{today} and user_id = ${userID}
+        WHERE derive_time > #{today} and user_id = ${userID} and info_type = ${infoType}
     </select>
 
     <select id="findRecommendedItemsByUser" resultType="casia.isiteam.recommendsystem.model.Recommendation">
         SELECT item_id
         FROM recommendations
-        WHERE user_id = ${userID} and derive_time > #{date}
+        WHERE user_id = ${userID} and derive_time > #{date} and info_type = ${infoType}
     </select>
 
     <insert id="saveRecommendation" parameterType="casia.isiteam.recommendsystem.model.Recommendation">
-        INSERT INTO recommendations (user_id, item_id, derive_algorithm)
-        VALUES (${user_id}, ${item_id}, ${derive_algorithm})
+        INSERT INTO recommendations (user_id, item_id, derive_algorithm, info_type)
+        VALUES (${user_id}, ${item_id}, ${derive_algorithm}, ${info_type})
     </insert>
 
 </mapper>

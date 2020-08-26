@@ -1,4 +1,4 @@
-package casia.isiteam.recommendsystem.algorithms.cb;
+package casia.isiteam.recommendsystem.utils;
 
 import org.ansj.app.keyword.KeyWordComputer;
 import org.ansj.app.keyword.Keyword;

@@ -13,4 +13,8 @@ public interface ItemMapper {
     List<Item> findItemsByPublishTime(@Param("startDate") String startDate);
 
     List<Item> findGroupItemsByPublishTime(@Param("startDate") String startDate);
+
+    List<Item> findWikiItemsByIDs(@Param("itemIDs") Collection<Long> itemIDs);
+
+    List<Item> findWikiItemsByPublishTime(@Param("startDate") String startDate);
 }

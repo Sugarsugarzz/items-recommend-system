@@ -15,6 +15,8 @@ public class Recommendation {
     private String derive_time;
     // 生成所用推荐算法
     private int derive_algorithm;
+    // 信息类型 1头条 2 百科
+    private int info_type;
 
     public Recommendation() {
     }
@@ -67,6 +69,14 @@ public class Recommendation {
         this.derive_algorithm = derive_algorithm;
     }
 
+    public int getInfo_type() {
+        return info_type;
+    }
+
+    public void setInfo_type(int info_type) {
+        this.info_type = info_type;
+    }
+
     @Override
     public String toString() {
         return "Recommendation{" +
@@ -75,6 +85,7 @@ public class Recommendation {
                 ", item_id=" + item_id +
                 ", derive_time='" + derive_time + '\'' +
                 ", derive_algorithm=" + derive_algorithm +
+                ", info_type=" + info_type +
                 '}';
     }
 }

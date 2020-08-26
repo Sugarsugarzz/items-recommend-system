@@ -1,9 +1,7 @@
-package casia.isiteam.recommendsystem.algorithms.cf;
+package casia.isiteam.recommendsystem.algorithms.toutiao.cf;
 
 import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
-import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.utils.ConfigGetKit;
-import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import org.apache.logging.log4j.LogManager;
@@ -84,13 +82,13 @@ public class UserBasedCollaborativeFilteringRecommender implements RecommendAlgo
                 }
 
                 // 过滤用户已浏览的信息项
-                RecommendKit.filterBrowsedItems(toBeRecommended, userID);
+                RecommendKit.filterBrowsedItems(toBeRecommended, userID, RecommendAlgorithm.TOUTIAO);
                 // 过滤已推荐过的信息项
-                RecommendKit.filterRecommendedItems(toBeRecommended, userID);
+                RecommendKit.filterRecommendedItems(toBeRecommended, userID, RecommendAlgorithm.TOUTIAO);
                 // 推荐信息项数量超出协同过滤推荐最多信息项数量
                 RecommendKit.removeOverSizeItems(toBeRecommended, recNum);
                 // 将本次推荐的结果，存入表中
-                RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CF);
+                RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CF, RecommendAlgorithm.TOUTIAO);
                 logger.info("本次向用户 " + userID +" 成功推荐：" + toBeRecommended);
 
                 System.out.println("================================================");

@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface RecommendationMapper {
 
-    long findTodayRecommendationCountByUser(@Param("today") Timestamp today, @Param("userID") long userID);
+    long findRecommendationCountByUserAndTime(@Param("today") Timestamp today, @Param("userID") long userID, @Param("infoType") int infoType);
 
-    List<Recommendation> findRecommendedItemsByUser(@Param("userID") Long userID, @Param("date") String date);
+    List<Recommendation> findRecommendedItemsByUser(@Param("userID") Long userID, @Param("date") String date, @Param("infoType") int infoType);
 
     void saveRecommendation(Recommendation obj);
 }

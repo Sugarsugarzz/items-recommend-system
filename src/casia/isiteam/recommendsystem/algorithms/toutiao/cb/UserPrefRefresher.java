@@ -1,11 +1,13 @@
-package casia.isiteam.recommendsystem.algorithms.cb;
+package casia.isiteam.recommendsystem.algorithms.toutiao.cb;
 
+import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.Item;
 import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.User;
 import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
+import casia.isiteam.recommendsystem.utils.TFIDF;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.ansj.app.keyword.Keyword;
@@ -138,7 +140,7 @@ public class UserPrefRefresher {
     public Map<Long, ArrayList<Long>> getTodayBrowsedMap(Collection<Long> userIDs) {
         Map<Long, ArrayList<Long>> map = new HashMap<>();
 
-        List<ItemLog> todayBrowsedList = DBKit.getBrowsedItemsByDate(RecommendKit.getSpecificDayFormat(0));
+        List<ItemLog> todayBrowsedList = DBKit.getBrowsedItemsByDate(RecommendKit.getSpecificDayFormat(0), RecommendAlgorithm.TOUTIAO);
         for (ItemLog itemLog : todayBrowsedList) {
             if (!userIDs.contains(itemLog.getUser_id())) {
                 continue;

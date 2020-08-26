@@ -113,20 +113,22 @@ public class DBKit {
 
     /**
      * 获取所有 ItemLog（浏览历史）
+     * @param infoType 头条 or 百科
      * @return ItemLog列表
      */
-    public static List<ItemLog> getAllItemLogs() {
-        return itemLogMapper.findAllItemLogs();
+    public static List<ItemLog> getAllItemLogs(int infoType) {
+        return itemLogMapper.findAllItemLogs(infoType);
     }
 
     /**
      * 获取时效性的 信息项ID
      * @param startDate 有效起始日期
+     * @param infoType 头条 or 百科
      * @return 信息项ID列表
      */
-    public static List<Long> getHotItemIDs(String startDate) {
+    public static List<Long> getHotItemIDs(String startDate, int infoType) {
         List<Long> hotItemIDs = new ArrayList<>();
-        List<ItemLog> itemLogs = itemLogMapper.findAllHotItems(startDate);
+        List<ItemLog> itemLogs = itemLogMapper.findAllHotItems(startDate, infoType);
         for (ItemLog itemLog : itemLogs) {
             hotItemIDs.add(itemLog.getRef_data_id());
         }
@@ -136,19 +138,21 @@ public class DBKit {
     /**
      * 根据用户ID，获取用户浏览记录
      * @param userID 用户ID
+     * @param infoType 头条 or 百科
      * @return ItemLogs
      */
-    public static List<ItemLog> getUserBrowsedItems(Long userID) {
-        return itemLogMapper.findBrowsedItemsByUser(userID);
+    public static List<ItemLog> getUserBrowsedItems(Long userID, int infoType) {
+        return itemLogMapper.findBrowsedItemsByUser(userID, infoType);
     }
 
     /**
      * 获取今日所有用户的浏览记录
      * @param startDate 今日日期
+     * @param infoType 头条 or 百科
      * @return ItemLogs
      */
-    public static List<ItemLog> getBrowsedItemsByDate(String startDate) {
-        return itemLogMapper.findBrowsedItemsByDate(startDate);
+    public static List<ItemLog> getBrowsedItemsByDate(String startDate, int infoType) {
+        return itemLogMapper.findBrowsedItemsByDate(startDate, infoType);
     }
 
     /**
@@ -160,23 +164,25 @@ public class DBKit {
     }
 
     /**
-     * 获取对用户的推荐记录
-     * @param userID 用户ID
-     * @param date 时效性起始日期
-     * @return 推荐记录
-     */
-    public static List<Recommendation> getUserRecommendedItems(Long userID, String date) {
-        return recommendationMapper.findRecommendedItemsByUser(userID, date);
-    }
-
-    /**
      * 获取当日为某一用户的已推荐的数量
      * @param timestamp 当日时间戳
      * @param userID 用户ID
+     * @param infoType 头条 or 百科
      * @return 已推荐数量
      */
-    public static long getUserTodayRecommendationCount(Timestamp timestamp, long userID) {
-        return recommendationMapper.findTodayRecommendationCountByUser(timestamp, userID);
+    public static long getRecommendationCountByUserAndTime(Timestamp timestamp, long userID, int infoType) {
+        return recommendationMapper.findRecommendationCountByUserAndTime(timestamp, userID, infoType);
+    }
+
+    /**
+     * 获取对用户的推荐记录
+     * @param userID 用户ID
+     * @param date 时效性起始日期
+     * @param infoType 头条 or 百科
+     * @return 推荐记录
+     */
+    public static List<Recommendation> getUserRecommendedItems(Long userID, String date, int infoType) {
+        return recommendationMapper.findRecommendedItemsByUser(userID, date, infoType);
     }
 
     /**
@@ -184,13 +190,15 @@ public class DBKit {
      * @param userID 用户ID
      * @param recommendItemID 推荐信息项ID
      * @param algorithm_type 推荐算法类型
+     * @param infoType 头条 or 百科
      */
-    public static void saveRecommendation(Long userID, Long recommendItemID, int algorithm_type) {
+    public static void saveRecommendation(Long userID, Long recommendItemID, int algorithm_type, int infoType) {
 
         Recommendation obj = new Recommendation();
         obj.setUser_id(userID);
         obj.setItem_id(recommendItemID);
         obj.setDerive_algorithm(algorithm_type);
+        obj.setInfo_type(infoType);
         recommendationMapper.saveRecommendation(obj);
         sqlSession.commit();
     }
