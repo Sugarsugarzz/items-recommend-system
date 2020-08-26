@@ -1,11 +1,11 @@
 package casia.isiteam.recommendsystem.utils;
 
-import casia.isiteam.recommendsystem.mapper.NewsLogMapper;
-import casia.isiteam.recommendsystem.mapper.NewsMapper;
+import casia.isiteam.recommendsystem.mapper.ItemLogMapper;
+import casia.isiteam.recommendsystem.mapper.ItemMapper;
 import casia.isiteam.recommendsystem.mapper.RecommendationMapper;
 import casia.isiteam.recommendsystem.mapper.UserMapper;
-import casia.isiteam.recommendsystem.model.News;
-import casia.isiteam.recommendsystem.model.NewsLog;
+import casia.isiteam.recommendsystem.model.Item;
+import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
 import casia.isiteam.recommendsystem.model.User;
 import org.apache.ibatis.session.SqlSession;
@@ -27,8 +27,8 @@ public class DBKit {
 
     static SqlSession sqlSession;
     static UserMapper userMapper;
-    static NewsMapper newsMapper;
-    static NewsLogMapper newslogMapper;
+    static ItemMapper itemMapper;
+    static ItemLogMapper itemLogMapper;
     static RecommendationMapper recommendationMapper;
 
     static {
@@ -39,8 +39,8 @@ public class DBKit {
 
         sqlSession = sqlSessionFactory.openSession();
         userMapper = sqlSession.getMapper(UserMapper.class);
-        newsMapper = sqlSession.getMapper(NewsMapper.class);
-        newslogMapper = sqlSession.getMapper(NewsLogMapper.class);
+        itemMapper = sqlSession.getMapper(ItemMapper.class);
+        itemLogMapper = sqlSession.getMapper(ItemLogMapper.class);
         recommendationMapper = sqlSession.getMapper(RecommendationMapper.class);
     }
 
@@ -66,7 +66,7 @@ public class DBKit {
     }
 
     /**
-     * 根据用户ID列表，获取用户的偏好关键词列表
+     * 根据用户ID列表，获取用户的偏好关键词及TF-IDF值列表
      * @param userIDs 用户ID列表
      * @return User列表
      */
@@ -85,87 +85,95 @@ public class DBKit {
     }
 
     /**
-     * 根据新闻ID，获取 News
-     * @param newsIDs 新闻ID列表
-     * @return News列表
+     * 根据信息项ID，获取 Items
+     * @param itemIDs 信息项ID列表
+     * @return Items列表
      */
-    public static List<News> getNewsByIDs(Collection<Long> newsIDs) {
-        return newsMapper.findNewsByIDs(newsIDs);
+    public static List<Item> getItemsByIDs(Collection<Long> itemIDs) {
+        return itemMapper.findItemsByIDs(itemIDs);
     }
 
     /**
-     * 根据起始发布日期，获取 News
+     * 根据起始发布日期，获取 Items
      * @param startDate 起始日期
-     * @return News列表
+     * @return Items列表
      */
-    public static List<News> getNewsByPublishTime(String startDate) {
-        return newsMapper.findNewsByPublishTime(startDate);
+    public static List<Item> getItemsByPublishTime(String startDate) {
+        return itemMapper.findItemsByPublishTime(startDate);
     }
 
     /**
-     * 根据有效起始日期，从各领域抽取一些 News
+     * 根据有效起始日期，从各领域抽取一些 Items
      * @param startDate 有效起始日期
-     * @return News列表
+     * @return Items列表
      */
-    public static List<News> getGroupNewsByPublishTime(String startDate) {
-        return newsMapper.findGroupNewsByPublishTime(startDate);
+    public static List<Item> getGroupItemsByPublishTime(String startDate) {
+        return itemMapper.findGroupItemsByPublishTime(startDate);
     }
 
     /**
-     * 获取所有 NewsLog（浏览历史）
-     * @return NewsLog列表
+     * 获取所有 ItemLog（浏览历史）
+     * @return ItemLog列表
      */
-    public static List<NewsLog> getAllNewsLogs() {
-        return newslogMapper.findAllNewsLogs();
+    public static List<ItemLog> getAllItemLogs() {
+        return itemLogMapper.findAllItemLogs();
     }
 
     /**
-     * 获取时效性的 热点新闻 ID
+     * 获取时效性的 信息项ID
      * @param startDate 有效起始日期
-     * @return 热点新闻ID列表
+     * @return 信息项ID列表
      */
-    public static List<Long> getHotNewsIDs(String startDate) {
-        List<Long> hotNewsIDs = new ArrayList<>();
-        List<NewsLog> news = newslogMapper.findAllHotNews(startDate);
-        for (NewsLog newsLog : news) {
-            hotNewsIDs.add(newsLog.getNews_id());
+    public static List<Long> getHotItemIDs(String startDate) {
+        List<Long> hotItemIDs = new ArrayList<>();
+        List<ItemLog> itemLogs = itemLogMapper.findAllHotItems(startDate);
+        for (ItemLog itemLog : itemLogs) {
+            hotItemIDs.add(itemLog.getRef_data_id());
         }
-        return hotNewsIDs;
+        return hotItemIDs;
     }
 
     /**
-     * 根据用户ID，获取用户浏览过的新闻记录
+     * 根据用户ID，获取用户浏览记录
      * @param userID 用户ID
-     * @return 浏览记录
+     * @return ItemLogs
      */
-    public static List<NewsLog> getUserBrowsedNews(Long userID) {
-        return newslogMapper.findBrowsedNewsByUser(userID);
+    public static List<ItemLog> getUserBrowsedItems(Long userID) {
+        return itemLogMapper.findBrowsedItemsByUser(userID);
     }
 
     /**
      * 获取今日所有用户的浏览记录
-     * @param startDate 日期
-     * @return 浏览记录
+     * @param startDate 今日日期
+     * @return ItemLogs
      */
-    public static List<NewsLog> getTodayBrowsedNews(String startDate) {
-        return newslogMapper.findBrowsedNewsByDate(startDate);
+    public static List<ItemLog> getBrowsedItemsByDate(String startDate) {
+        return itemLogMapper.findBrowsedItemsByDate(startDate);
     }
 
     /**
-     * 获取已向用户推荐过的新闻推荐记录
+     * 获取所有模块名
+     * @return ModuleNames
+     */
+    public static List<String> getAllModuleNames() {
+        return userMapper.findAllModuleName();
+    }
+
+    /**
+     * 获取对用户的推荐记录
      * @param userID 用户ID
      * @param date 时效性起始日期
      * @return 推荐记录
      */
-    public static List<Recommendation> getUserRecommendedNews(Long userID, String date) {
-        return recommendationMapper.findRecommendedNewsByUser(userID, date);
+    public static List<Recommendation> getUserRecommendedItems(Long userID, String date) {
+        return recommendationMapper.findRecommendedItemsByUser(userID, date);
     }
 
     /**
-     * 获取当日为某一用户的已推荐的新闻数量
+     * 获取当日为某一用户的已推荐的数量
      * @param timestamp 当日时间戳
      * @param userID 用户ID
-     * @return 已推荐新闻数量
+     * @return 已推荐数量
      */
     public static long getUserTodayRecommendationCount(Timestamp timestamp, long userID) {
         return recommendationMapper.findTodayRecommendationCountByUser(timestamp, userID);
@@ -174,14 +182,14 @@ public class DBKit {
     /**
      * 将推荐结果存入 recommendations 表
      * @param userID 用户ID
-     * @param recommendNewsID 推荐新闻ID
+     * @param recommendItemID 推荐信息项ID
      * @param algorithm_type 推荐算法类型
      */
-    public static void saveRecommendation(Long userID, Long recommendNewsID, int algorithm_type) {
+    public static void saveRecommendation(Long userID, Long recommendItemID, int algorithm_type) {
 
         Recommendation obj = new Recommendation();
         obj.setUser_id(userID);
-        obj.setNews_id(recommendNewsID);
+        obj.setItem_id(recommendItemID);
         obj.setDerive_algorithm(algorithm_type);
         recommendationMapper.saveRecommendation(obj);
         sqlSession.commit();

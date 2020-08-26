@@ -13,4 +13,6 @@ public interface UserMapper {
     List<User> findPrefListByUserIDs(@Param("userIDs") Collection<Long> userIDs);
 
     void updatePrefListByUserID(@Param("prefList") String prefList, @Param("userID") Long userID);
+
+    List<String> findAllModuleName();
 }

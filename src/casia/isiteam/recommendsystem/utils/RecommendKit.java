@@ -1,8 +1,10 @@
 package casia.isiteam.recommendsystem.utils;
 
-import casia.isiteam.recommendsystem.model.NewsLog;
+import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
 import casia.isiteam.recommendsystem.model.User;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,8 +19,9 @@ public class RecommendKit {
 
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
-    // 推荐新闻的时效性天数，即从推荐当天开始到之前的 beforeDays 天的新闻仍然具有时效性，予以推荐
+    // 推荐信息项的时效性天数，即从推荐当天开始到之前的 beforeDays 天的信息项仍然具有时效性，予以推荐
     private static final int beforeDays = ConfigGetKit.getInt("recommendBeforeDays");
+//    private static final int beforeDays = -1;
 
     /**
      * 在当日基础上增加/减少天数后的日期字符串
@@ -70,6 +73,19 @@ public class RecommendKit {
     }
 
     /**
+     * 用户偏好为 null，根据模块名补充默认偏好
+     */
+    public static String getDefaultPrefList() {
+
+        List<String> moduleNames = DBKit.getAllModuleNames();
+        JSONObject jsonObject = new JSONObject();
+        for (String name : moduleNames) {
+            jsonObject.put(name, new JSONObject());
+        }
+        return jsonObject.toJSONString();
+    }
+
+    /**
      * 获取 用户与偏好列表 的键值对
      * @param userIDs 用户ID列表
      */
@@ -84,36 +100,36 @@ public class RecommendKit {
     }
 
     /**
-     * 过滤用户已经看过的新闻
-     * @param recNewsList 新闻推荐列表
+     * 过滤用户已经看过的信息项
+     * @param recItemList 信息项推荐列表
      * @param userID 用户ID
      */
-    public static void filterBrowsedNews(Collection<Long> recNewsList, Long userID) {
+    public static void filterBrowsedItems(Collection<Long> recItemList, Long userID) {
 
-        if (recNewsList.size() == 0)
+        if (recItemList.size() == 0)
             return;
 
-        List<NewsLog> userBrowsedNews = DBKit.getUserBrowsedNews(userID);
-        for (NewsLog newsLog : userBrowsedNews) {
-            System.out.println("用户浏览过的新闻id - " + newsLog.getNews_id() );
-            recNewsList.remove(newsLog.getNews_id());
+        List<ItemLog> userBrowsedItems = DBKit.getUserBrowsedItems(userID);
+        for (ItemLog itemLog : userBrowsedItems) {
+            System.out.println("用户浏览过的信息项id - " + itemLog.getRef_data_id());
+            recItemList.remove(itemLog.getRef_data_id());
         }
     }
 
     /**
-     * 过滤已向用户推荐过的新闻
-     * @param recNewsList 新闻推荐列表
+     * 过滤已向用户推荐过的信息项
+     * @param recItemList 信息项推荐列表
      * @param userID 用户ID
      */
-    public static void filterRecommendedNews(Collection<Long> recNewsList, Long userID) {
+    public static void filterRecommendedItems(Collection<Long> recItemList, Long userID) {
 
-        if (recNewsList.size() == 0)
+        if (recItemList.size() == 0)
             return;
 
-        List<Recommendation> userRecommendedNews = DBKit.getUserRecommendedNews(userID, getInRecDate());
-        for (Recommendation recommendation : userRecommendedNews) {
-            System.out.println("已向用户推荐过的新闻id - " + recommendation.getNews_id());
-            recNewsList.remove(recommendation.getNews_id());
+        List<Recommendation> userRecommendedItems = DBKit.getUserRecommendedItems(userID, getInRecDate());
+        for (Recommendation recommendation : userRecommendedItems) {
+            System.out.println("已向用户推荐过的信息项id - " + recommendation.getItem_id());
+            recItemList.remove(recommendation.getItem_id());
         }
     }
 
@@ -122,7 +138,7 @@ public class RecommendKit {
      * @param toBeRecommended 推荐候选列表
      * @param recNum 最大推荐数量限制
      */
-    public static void removeOverSizeNews(Set<Long> toBeRecommended, int recNum) {
+    public static void removeOverSizeItems(Collection<Long> toBeRecommended, int recNum) {
 
         if (toBeRecommended.size() <= recNum)
             return;
@@ -141,14 +157,14 @@ public class RecommendKit {
     /**
      * 将推荐结果存入 recommendations 表
      * @param userID 用户ID
-     * @param recommendNewsIDs 待存入的推荐新闻ID列表
+     * @param recommendItemIDs 待存入的推荐信息项ID列表
      * @param algorithm_type 标注推荐结果来自哪个推荐算法
      */
-    public static void insertRecommendations(Long userID, Collection<Long> recommendNewsIDs, int algorithm_type) {
+    public static void insertRecommendations(Long userID, Collection<Long> recommendItemIDs, int algorithm_type) {
 
-        for (Long recommendNewsID : recommendNewsIDs) {
-            System.out.println("本次向用户推荐的新闻id - " + recommendNewsID);
-            DBKit.saveRecommendation(userID, recommendNewsID, algorithm_type);
+        for (Long recommendItemID : recommendItemIDs) {
+            System.out.println("本次向用户推荐的信息项id - " + recommendItemID);
+            DBKit.saveRecommendation(userID, recommendItemID, algorithm_type);
         }
     }
 }

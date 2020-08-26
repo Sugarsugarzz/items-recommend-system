@@ -5,28 +5,25 @@ package casia.isiteam.recommendsystem.model;
  */
 public class Recommendation {
 
-    // 推荐项id
+    // id
     private long id;
     // 用户id
     private long user_id;
-    // 新闻id
-    private long news_id;
+    // 推荐项id
+    private long item_id;
     // 生成时间
     private String derive_time;
-    // 用户反馈 0 未浏览 1 已浏览
-    private int feedback;
     // 生成所用推荐算法
     private int derive_algorithm;
 
     public Recommendation() {
     }
 
-    public Recommendation(long id, long user_id, long news_id, String derive_time, int feedback, int derive_algorithm) {
+    public Recommendation(long id, long user_id, long item_id, String derive_time, int derive_algorithm) {
         this.id = id;
         this.user_id = user_id;
-        this.news_id = news_id;
+        this.item_id = item_id;
         this.derive_time = derive_time;
-        this.feedback = feedback;
         this.derive_algorithm = derive_algorithm;
     }
 
@@ -46,12 +43,12 @@ public class Recommendation {
         this.user_id = user_id;
     }
 
-    public long getNews_id() {
-        return news_id;
+    public long getItem_id() {
+        return item_id;
     }
 
-    public void setNews_id(long news_id) {
-        this.news_id = news_id;
+    public void setItem_id(long item_id) {
+        this.item_id = item_id;
     }
 
     public String getDerive_time() {
@@ -60,14 +57,6 @@ public class Recommendation {
 
     public void setDerive_time(String derive_time) {
         this.derive_time = derive_time;
-    }
-
-    public int getFeedback() {
-        return feedback;
-    }
-
-    public void setFeedback(int feedback) {
-        this.feedback = feedback;
     }
 
     public int getDerive_algorithm() {
@@ -83,9 +72,8 @@ public class Recommendation {
         return "Recommendation{" +
                 "id=" + id +
                 ", user_id=" + user_id +
-                ", news_id=" + news_id +
+                ", item_id=" + item_id +
                 ", derive_time='" + derive_time + '\'' +
-                ", feedback=" + feedback +
                 ", derive_algorithm=" + derive_algorithm +
                 '}';
     }

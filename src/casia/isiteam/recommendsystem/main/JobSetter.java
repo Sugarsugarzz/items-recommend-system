@@ -57,8 +57,8 @@ public class JobSetter {
      * @param userIDs 用户id列表
      */
     private void executeInstantJob(List<Long> userIDs) {
-        // 先用热点新闻推荐器生成今日的热点新闻
-        HotRecommender.formTodayTopHotNewsList();
+        // 先用热点推荐器生成今日的热点信息项
+        HotRecommender.formTodayTopHotItemList();
 
         if (isEnableCF) {
             new UserBasedCollaborativeFilteringRecommender().recommend(userIDs);

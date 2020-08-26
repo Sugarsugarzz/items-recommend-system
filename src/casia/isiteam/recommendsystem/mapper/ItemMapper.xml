@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD com.isitem.recommendsystem.mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="casia.isiteam.recommendsystem.mapper.ItemMapper">
+
+    <select id="findItemsByIDs" resultType="casia.isiteam.recommendsystem.model.Item">
+        SELECT id, infoTitle, infoDesc, classifySubName
+        FROM toutiao_info_ref
+        <where>
+            <foreach collection="itemIDs" open="id in (" close=")" item="id" separator=",">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="findItemsByPublishTime" resultType="casia.isiteam.recommendsystem.model.Item">
+        SELECT id, infoTitle, infoDesc, classifySubName
+        FROM toutiao_info_ref
+        WHERE publishTime > #{startDate}
+    </select>
+
+    <select id="findGroupItemsByPublishTime" resultType="casia.isiteam.recommendsystem.model.Item">
+        SELECT t1.id FROM toutiao_info_ref t1
+        WHERE EXISTS (SELECT COUNT(*) + 1 FROM toutiao_info_ref t2 WHERE t2.publishTime > #{startDate} AND t2.classifySubName = t1.classifySubName AND t2.id > t1.id HAVING (COUNT(*) + 1) &lt;= 5)
+        AND t1.publishTime > #{startDate}
+        ORDER BY t1.classifySubName
+    </select>
+</mapper>

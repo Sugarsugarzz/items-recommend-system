@@ -1,7 +1,7 @@
 package casia.isiteam.recommendsystem.algorithms.cb;
 
 import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
-import casia.isiteam.recommendsystem.model.News;
+import casia.isiteam.recommendsystem.model.Item;
 import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
@@ -14,7 +14,7 @@ import java.util.*;
 
 /**
  * 基于内容的推荐算法实现
- *  思路：提取新闻的关键词列表（TF-IDF），以及每个用户的偏好关键词列表，计算关键词相似度计算，取最相似的 N 个新闻推荐给用户。
+ *  思路：提取信息项的关键词列表（TF-IDF），以及每个用户的偏好关键词列表，计算关键词相似度计算，取最相似的 N 个信息项推荐给用户。
  */
 @SuppressWarnings("unchecked")
 public class ContentBasedRecommender implements RecommendAlgorithm {
@@ -23,7 +23,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
 
     // TFIDF算法提取关键词的次数
     private static final int KEY_WORDS_NUM = ConfigGetKit.getInt("TFIDFKeywordsNum");
-    // 利用基于内容推荐算法给每个用户推荐的新闻条数
+    // 利用基于内容推荐算法给每个用户推荐的信息项条数
     private static final int recNum = ConfigGetKit.getInt("CBRecNum");
 
 
@@ -35,61 +35,61 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
     public void recommend(List<Long> userIDs) {
 
         logger.info("基于内容的推荐 start at " + new Date());
-        // 统计利用 CB算法 推荐的新闻数量
+        // 统计利用 CB算法 推荐的信息项数量
         int count = 0;
 
         try {
             // 用户偏好衰减 + 根据用户浏览历史更新用户偏好
             new UserPrefRefresher().refresher(userIDs);
             logger.info("用户偏好更新完成（衰减+浏览历史） at " + new Date());
-            // 新闻ID - 关键词列表 Map
-            Map<Long, List<Keyword>> newsKeywordsMap = new HashMap<>();
-            // 新闻ID - 新闻所属模块ID Map
-            Map<Long, Long> newsModuleMap = new HashMap<>();
+            // （信息项ID - 关键词列表）Map
+            Map<Long, List<Keyword>> itemsKeywordsMap = new HashMap<>();
+            // （信息项ID - 信息项所属模块ID）Map
+            Map<Long, String> itemsModuleMap = new HashMap<>();
             // 用户偏好
             Map<Long, String> userPrefListMap = RecommendKit.getUserPreListMap(userIDs);
-            // 时效内的所有新闻
-            List<News> newsList = DBKit.getNewsByPublishTime(RecommendKit.getInRecDate());
+            // 时效内的所有信息项
+            List<Item> itemList = DBKit.getItemsByPublishTime(RecommendKit.getInRecDate());
 
-            // 将新闻的关键词、TD-IDF值和所属模块ID存入到对应Map
-            for (News news : newsList) {
-                newsKeywordsMap.put(news.getId(), TFIDF.getKeywordsByTFIDE(news.getTitle(), news.getContent(), KEY_WORDS_NUM));
-                newsModuleMap.put(news.getId(), news.getModule_id());
+            // 将信息项的关键词、TD-IDF值和所属模块名存入到对应Map
+            for (Item item : itemList) {
+                itemsKeywordsMap.put(item.getId(), TFIDF.getKeywordsByTFIDE(item.getInfoTitle(), item.getInfoDesc(), KEY_WORDS_NUM));
+                itemsModuleMap.put(item.getId(), item.getClassifySubName());
             }
 
-            // 遍历用户，为用户推荐匹配的新闻
+            // 遍历用户，为用户推荐匹配的信息项
             for (Long userID : userIDs) {
-                // 获取用户偏好
+                // 获取该用户偏好
                 Map<String, Object> map = JSONObject.parseObject(userPrefListMap.get(userID));
-                // 暂存与用户偏好相匹配的新闻，新闻ID - 匹配值 Map
+                // 暂存与用户偏好相匹配的信息项，（信息项ID - 匹配值）Map
                 Map<Long, Double> tempMatchMap = new LinkedHashMap<>();
-                // 遍历新闻，获取新闻与用户的匹配值
-                for (Long newsID : newsKeywordsMap.keySet()) {
-                    // 获取用于在新闻所属模块的偏好
-                    Long moduleID = newsModuleMap.get(newsID);
-                    Map<String, Object> moduleMap = (Map<String, Object>) map.get(moduleID.toString());
+                // 遍历时效内所有信息项，获取信息项与用户的匹配值
+                for (Long itemID : itemsKeywordsMap.keySet()) {
+                    // 获取用于在信息项所属模块的用户偏好
+                    String moduleName = itemsModuleMap.get(itemID);
+                    Map<String, Object> moduleMap = (Map<String, Object>) map.get(moduleName);
                     // 如果用户在该模块下的偏好不为空
                     if (!moduleMap.isEmpty()) {
-                        tempMatchMap.put(newsID, getMatchValue(moduleMap, newsKeywordsMap.get(newsID)));
+                        tempMatchMap.put(itemID, getMatchValue(moduleMap, itemsKeywordsMap.get(itemID)));
                     }
                 }
 
-                // 去除匹配值为 0 的新闻
+                // 去除匹配值为 0 的信息项
                 removeZeroItem(tempMatchMap);
                 // 根据匹配值大小，从大到小排序
                 tempMatchMap = sortMapByValue(tempMatchMap);
-                // 初始化最终推荐新闻列表
+                // 初始化最终推荐信息项列表
                 Set<Long> toBeRecommended = tempMatchMap.keySet();
                 System.out.println("用户ID：" + userID + "\n本次基于内容推荐为用户生成：" + toBeRecommended.size() + " 条");
-                // 过滤已推荐过的新闻
-                RecommendKit.filterRecommendedNews(toBeRecommended, userID);
-                // 过滤用户已浏览的新闻
-                RecommendKit.filterBrowsedNews(toBeRecommended, userID);
-                // 去除超出推荐数量的新闻
-                RecommendKit.removeOverSizeNews(toBeRecommended, recNum);
+                // 过滤已推荐过的信息项
+                RecommendKit.filterRecommendedItems(toBeRecommended, userID);
+                // 过滤用户已浏览的信息项
+                RecommendKit.filterBrowsedItems(toBeRecommended, userID);
+                // 去除超出推荐数量的信息项
+                RecommendKit.removeOverSizeItems(toBeRecommended, recNum);
                 // 将本次推荐结果存入表中
                 RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CB);
-                logger.info("成功推荐列表：" + toBeRecommended);
+                logger.info("本次向用户 " + userID +" 成功推荐：" + toBeRecommended);
 
                 System.out.println("================================================");
                 count += toBeRecommended.size();
@@ -97,6 +97,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("基于内容推荐算法 推荐失败！" + e);
         }
 
@@ -106,9 +107,9 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
     }
 
     /**
-     * 计算用户偏好关键词列表与新闻关键词列表的匹配值
+     * 计算用户偏好关键词列表与信息项关键词列表的匹配值
      * @param map 用户偏好关键词
-     * @param keywords 新闻关键词
+     * @param keywords 信息项关键词
      * @return 匹配值
      */
     private double getMatchValue(Map<String, Object> map, List<Keyword> keywords) {
@@ -125,11 +126,11 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
     }
 
     /**
-     * 删除匹配值为 0 的新闻项
+     * 删除匹配值为 0 的信息项项
      */
     private void removeZeroItem(Map<Long, Double> map) {
 
-        map.keySet().removeIf(newsID -> map.get(newsID) == 0);
+        map.keySet().removeIf(itemID -> map.get(itemID) == 0);
     }
 
     /**

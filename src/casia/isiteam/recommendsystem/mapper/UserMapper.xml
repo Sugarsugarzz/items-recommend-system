@@ -5,12 +5,12 @@
 
     <select id="findAllUsers" resultType="casia.isiteam.recommendsystem.model.User">
         SELECT DISTINCT *
-        FROM `users`
+        FROM app_user
     </select>
 
     <select id="findPrefListByUserIDs" resultType="casia.isiteam.recommendsystem.model.User">
         SELECT id, pref_list
-        FROM `users`
+        FROM app_user
         <where>
             <foreach collection="userIDs" open="id in (" close=")" item="id" separator=",">
                 ${id}
@@ -19,8 +19,15 @@
     </select>
 
     <update id="updatePrefListByUserID">
-        UPDATE `users`
+        UPDATE app_user
         SET pref_list = #{prefList}
         WHERE id = ${userID}
     </update>
+
+    <select id="findAllModuleName" resultType="java.lang.String">
+        SELECT classifyName
+        FROM info_ref_calssify_type
+        WHERE classifyParentId != -1 and info_type = 1
+    </select>
+
 </mapper>

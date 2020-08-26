@@ -10,7 +10,7 @@ public interface RecommendationMapper {
 
     long findTodayRecommendationCountByUser(@Param("today") Timestamp today, @Param("userID") long userID);
 
-    List<Recommendation> findRecommendedNewsByUser(@Param("userID") Long userID, @Param("date") String date);
+    List<Recommendation> findRecommendedItemsByUser(@Param("userID") Long userID, @Param("date") String date);
 
     void saveRecommendation(Recommendation obj);
 }

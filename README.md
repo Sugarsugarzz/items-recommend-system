@@ -84,6 +84,18 @@
 </table>
 
 
+**表映射：**
+
+| 原始表          | 智搜库表                  | 字段映射                                                     |
+| --------------- | ------------------------- | ------------------------------------------------------------ |
+| users           | app_user                  | id - id<br />pref_list - pref_list（新添字段）               |
+| item            | toutiao_info_ref          | id - id<br />content - infoDesc<br />news_time - publishTime<br />title - infoTitle<br />module_id - classifySubName |
+| newslogs        | user_read_record          | id - id<br />user_id - user_id<br />news_id - ref_data_id（info_type=1头条，2百科）<br />view_time - insert_time |
+| newsmodules     | info_ref_calssify_type    | id - id<br />name - classifName（classifyParentId不为-1的）  |
+| recommendations | recommendations（新添表） | id - id<br />user_id - user_id<br />news_id - item_id<br />derive_time - derive_time <br />derive_algorithm - derive_algorithm |
+
+
+
 
 ### 技术选型调研
 
@@ -279,6 +291,10 @@
     - 实现用户偏好根据浏览记录更新。
     - 实现基于内容的推荐。
 
-##### 2020.08.22
+##### 2020.08.24
     - 测试优化三种算法。
     - 实现随机补充推荐。
+
+##### 2020.08.25
+    - 实现与头条业务数据库结合。
+
