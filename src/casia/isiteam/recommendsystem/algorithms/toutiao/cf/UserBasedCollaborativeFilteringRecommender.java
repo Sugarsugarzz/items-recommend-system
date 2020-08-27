@@ -64,7 +64,7 @@ public class UserBasedCollaborativeFilteringRecommender implements RecommendAlgo
             // 指定用户相似度计算方法，这里采用对数似然相似度
             UserSimilarity similarity = new LogLikelihoodSimilarity(dataModel);
             // 指定最近邻用户数量，这里为5
-            UserNeighborhood neighborhood = new NearestNUserNeighborhood(5, similarity, dataModel);
+            UserNeighborhood neighborhood = new NearestNUserNeighborhood(2, similarity, dataModel);
             // 构建协同过滤推荐模型
             Recommender recommender = new GenericUserBasedRecommender(dataModel, neighborhood, similarity);
 
@@ -115,6 +115,7 @@ public class UserBasedCollaborativeFilteringRecommender implements RecommendAlgo
         // 这步后面可以的话改成直接用 Mybatis 获取 DataSource
         // Warning: You are not using ConnectionPoolDataSource. 需要给userID和itemID添加索引，否则会导致速度慢。
         // 事实上不需要连接池，基于内存的ReloadFromJDBCDataModel可以解决速度慢的问题。
+        // TODO
         MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setServerName("192.168.10.231");
         dataSource.setPort(3307);

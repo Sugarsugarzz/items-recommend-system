@@ -68,7 +68,7 @@ public class JobSetter {
         /* 头条推荐 */
         if (flag == 1) {
             // 先用热点推荐器生成今日的热点信息项
-            HotRecommender.formTodayTopHotItemList();
+            HotRecommender.formTopHotItemList();
 
             if (isEnableCF) {
                 new UserBasedCollaborativeFilteringRecommender().recommend(userIDs);
@@ -91,7 +91,7 @@ public class JobSetter {
         /* 百科推荐 */
         else if (flag == 2) {
             // 生成当日热点百科项
-            // TODO
+            WikiHotRecommender.formTopHotWikiItemList();
 
             if (isEnableCF) {
                 new WikiUserBasedCollaborativeFilteringRecommender().recommend(userIDs);

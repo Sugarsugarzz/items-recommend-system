@@ -25,10 +25,10 @@ public class Main {
             flag -  头条 1，百科  2
          */
 
-        boolean isEnableCF = false;
+        boolean isEnableCF = true;
         boolean isEnableCB = false;
         boolean isEnableHR = false;
-        boolean isEnableRR = true;
+        boolean isEnableRR = false;
         int flag = 2;
 
         logger.info("算法启用状态："
@@ -44,7 +44,7 @@ public class Main {
         // 为特定用户执行一次推荐
         List<Long> users = new ArrayList<>();
 //        users.add(1L);
-        users.add(2L);
+        users.add(3L);
         new JobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, flag).executeInstantJobForCertainUsers(users);
 
     }

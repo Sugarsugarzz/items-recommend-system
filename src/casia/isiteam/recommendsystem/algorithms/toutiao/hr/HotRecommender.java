@@ -73,9 +73,9 @@ public class HotRecommender implements RecommendAlgorithm {
     }
 
     /**
-     * 生成当日的热点信息项列表
+     * 生成时效期内的热点信息项列表
      */
-    public static void formTodayTopHotItemList() {
+    public static void formTopHotItemList() {
 
         // 清空热点信息项List
         topHotItemList.clear();
