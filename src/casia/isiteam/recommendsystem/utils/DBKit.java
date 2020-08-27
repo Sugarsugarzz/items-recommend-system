@@ -112,6 +112,15 @@ public class DBKit {
     }
 
     /**
+     * 根据有效起始日期，从 wiki_info表 抽取一些 Items
+     * @param startDate 有效起始日期
+     * @return Items列表
+     */
+    public static List<Item> getWikiItemsByPublishTime(String startDate) {
+        return itemMapper.findWikiItemsByPublishTime(startDate);
+    }
+
+    /**
      * 获取所有 ItemLog（浏览历史）
      * @param infoType 头条 or 百科
      * @return ItemLog列表

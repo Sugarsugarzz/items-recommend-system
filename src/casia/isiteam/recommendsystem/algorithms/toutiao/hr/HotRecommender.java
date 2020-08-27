@@ -54,6 +54,7 @@ public class HotRecommender implements RecommendAlgorithm {
                 while (i-- > 0)
                     toBeRecommended.add(topHotItemList.get(i));
             }
+            logger.info("本次热点推荐为该用户生成：" + toBeRecommended.size() + " 条");
 
             // 过滤用户已浏览的信息项
             RecommendKit.filterBrowsedItems(toBeRecommended, userID, RecommendAlgorithm.TOUTIAO);

@@ -25,11 +25,11 @@ public class Main {
             flag -  头条 1，百科  2
          */
 
-        boolean isEnableCF = true;
-        boolean isEnableCB = true;
-        boolean isEnableHR = true;
+        boolean isEnableCF = false;
+        boolean isEnableCB = false;
+        boolean isEnableHR = false;
         boolean isEnableRR = true;
-        int flag = 1;
+        int flag = 2;
 
         logger.info("算法启用状态："
                 + "基于用户的协同过滤 - " + isEnableCF + " | "

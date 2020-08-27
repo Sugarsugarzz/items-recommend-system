@@ -7,6 +7,7 @@ import casia.isiteam.recommendsystem.algorithms.toutiao.random.RandomRecommender
 import casia.isiteam.recommendsystem.algorithms.wiki.cb.WikiContentBasedRecommender;
 import casia.isiteam.recommendsystem.algorithms.wiki.cf.WikiUserBasedCollaborativeFilteringRecommender;
 import casia.isiteam.recommendsystem.algorithms.wiki.hr.WikiHotRecommender;
+import casia.isiteam.recommendsystem.algorithms.wiki.random.WikiRandomRecommender;
 import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import org.apache.logging.log4j.LogManager;
@@ -88,7 +89,7 @@ public class JobSetter {
         }
 
         /* 百科推荐 */
-        else {
+        else if (flag == 2) {
             // 生成当日热点百科项
             // TODO
 
@@ -105,7 +106,7 @@ public class JobSetter {
                 logger.info("基于热点推荐方法 推荐完成！");
             }
             if (isEnableRR) {
-                new RandomRecommender().recommend(userIDs);
+                new WikiRandomRecommender().recommend(userIDs);
                 logger.info("随机补充推荐方法 推荐完成！");
             }
         }

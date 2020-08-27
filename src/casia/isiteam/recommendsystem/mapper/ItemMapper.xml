@@ -25,4 +25,12 @@
         AND t1.publishTime > #{startDate}
         ORDER BY t1.classifySubName
     </select>
+
+    <select id="findWikiItemsByPublishTime" resultType="casia.isiteam.recommendsystem.model.Item">
+        SELECT auto_id
+        FROM wiki_info
+        WHERE publishTime > #{startDate}
+        ORDER BY RAND() LIMIT 20
+    </select>
+
 </mapper>

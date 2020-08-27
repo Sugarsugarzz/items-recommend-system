@@ -55,6 +55,7 @@ public class RandomRecommender implements RecommendAlgorithm {
                 while (i-- > 0)
                     toBeRecommended.add(itemList.get(i).getId());
             }
+            logger.info("本次随机推荐为该用户生成：" + toBeRecommended.size() + " 条");
 
             // 过滤用户已浏览的信息项
             RecommendKit.filterBrowsedItems(toBeRecommended, userID, RecommendAlgorithm.TOUTIAO);

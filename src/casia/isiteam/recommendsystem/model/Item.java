@@ -5,8 +5,12 @@ package casia.isiteam.recommendsystem.model;
  */
 public class Item {
 
-    // 信息id
+    // 信息项id
     private long id;
+    // wiki项id
+    private long auto_id;
+    // wiki项名
+    private String name;
     // 摘要
     private String infoDesc;
     // 发布时间
@@ -20,8 +24,10 @@ public class Item {
     public Item() {
     }
 
-    public Item(long id, String infoDesc, String publishTime, String infoTitle, String classifySubName) {
+    public Item(long id, long auto_id, String name, String infoDesc, String publishTime, String infoTitle, String classifySubName) {
         this.id = id;
+        this.auto_id = auto_id;
+        this.name = name;
         this.infoDesc = infoDesc;
         this.publishTime = publishTime;
         this.infoTitle = infoTitle;
@@ -34,6 +40,22 @@ public class Item {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getAuto_id() {
+        return auto_id;
+    }
+
+    public void setAuto_id(long auto_id) {
+        this.auto_id = auto_id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getInfoDesc() {
@@ -70,8 +92,10 @@ public class Item {
 
     @Override
     public String toString() {
-        return "News{" +
+        return "Item{" +
                 "id=" + id +
+                ", auto_id=" + auto_id +
+                ", name='" + name + '\'' +
                 ", infoDesc='" + infoDesc + '\'' +
                 ", publishTime='" + publishTime + '\'' +
                 ", infoTitle='" + infoTitle + '\'' +
