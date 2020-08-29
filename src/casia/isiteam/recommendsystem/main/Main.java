@@ -25,8 +25,8 @@ public class Main {
             flag -  头条 1，百科  2
          */
 
-        boolean isEnableCF = true;
-        boolean isEnableCB = false;
+        boolean isEnableCF = false;
+        boolean isEnableCB = true;
         boolean isEnableHR = false;
         boolean isEnableRR = false;
         int flag = 2;
@@ -44,7 +44,7 @@ public class Main {
         // 为特定用户执行一次推荐
         List<Long> users = new ArrayList<>();
 //        users.add(1L);
-        users.add(3L);
+        users.add(2L);
         new JobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, flag).executeInstantJobForCertainUsers(users);
 
     }

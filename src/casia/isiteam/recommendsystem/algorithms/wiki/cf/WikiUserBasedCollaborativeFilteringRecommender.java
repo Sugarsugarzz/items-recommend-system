@@ -64,6 +64,7 @@ public class WikiUserBasedCollaborativeFilteringRecommender implements Recommend
 //            }
 
             // 指定用户相似度计算方法，这里采用对数似然相似度
+            // 惩罚热门产品，利于挖掘长尾产品
             UserSimilarity similarity = new LogLikelihoodSimilarity(dataModel);
             // 指定最近邻用户数量，这里为5
             UserNeighborhood neighborhood = new NearestNUserNeighborhood(2, similarity, dataModel);

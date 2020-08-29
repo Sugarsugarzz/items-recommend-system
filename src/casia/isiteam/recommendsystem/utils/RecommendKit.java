@@ -6,6 +6,7 @@ import casia.isiteam.recommendsystem.model.Recommendation;
 import casia.isiteam.recommendsystem.model.User;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -75,10 +76,17 @@ public class RecommendKit {
 
     /**
      * 用户偏好为 null，根据模块名补充默认偏好
+     * @param infoType 头条 or 百科
      */
-    public static String getDefaultPrefList() {
+    public static String getDefaultPrefList(int infoType) {
 
-        List<String> moduleNames = DBKit.getAllModuleNames();
+        List<String> moduleNames;
+        if (infoType == 1) {
+            moduleNames= DBKit.getAllModuleNames();
+        } else {
+            moduleNames= DBKit.getAllWikiModuleNames();
+        }
+
         JSONObject jsonObject = new JSONObject();
         for (String name : moduleNames) {
             jsonObject.put(name, new JSONObject());
@@ -96,7 +104,19 @@ public class RecommendKit {
         for (User user : users) {
             map.put(user.getId(), user.getPref_list());
         }
+        return map;
+    }
 
+    /**
+     * 获取 用户与wiki偏好 的键值对
+     * @param userIDs 用户ID列表
+     */
+    public static Map<Long, String> getUserWikiPreListMap(Collection<Long> userIDs) {
+        Map<Long, String> map = new HashMap<>();
+        List<User> users = DBKit.getUserWikiPrefList(userIDs);
+        for (User user : users) {
+            map.put(user.getId(), user.getWiki_pref_list());
+        }
         return map;
     }
 

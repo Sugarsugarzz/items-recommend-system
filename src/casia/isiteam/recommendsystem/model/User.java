@@ -11,14 +11,17 @@ public class User {
     private String username;
     // 用户偏好
     private String pref_list;
+    // wiki用户偏好
+    private String wiki_pref_list;
 
     public User() {
     }
 
-    public User(long id, String username, String pref_list) {
+    public User(long id, String username, String pref_list, String wiki_pref_list) {
         this.id = id;
         this.username = username;
         this.pref_list = pref_list;
+        this.wiki_pref_list = wiki_pref_list;
     }
 
     public long getId() {
@@ -45,12 +48,21 @@ public class User {
         this.pref_list = pref_list;
     }
 
+    public String getWiki_pref_list() {
+        return wiki_pref_list;
+    }
+
+    public void setWiki_pref_list(String wiki_pref_list) {
+        this.wiki_pref_list = wiki_pref_list;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", pref_list='" + pref_list + '\'' +
+                ", wiki_pref_list='" + wiki_pref_list + '\'' +
                 '}';
     }
 }

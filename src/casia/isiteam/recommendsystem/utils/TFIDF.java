@@ -49,5 +49,11 @@ public class TFIDF {
         for (Keyword keyword : keywords) {
             System.out.println(keyword.getName() + " - " + keyword.getScore() + " - " + keyword.getFreq());
         }
+
+        title = "AK-103突击步枪";
+        keywords = getKeywordsByTFIDE(title, 5);
+        for (Keyword keyword : keywords) {
+            System.out.println(keyword.getName() + " - " + keyword.getScore() + " - " + keyword.getFreq());
+        }
     }
 }

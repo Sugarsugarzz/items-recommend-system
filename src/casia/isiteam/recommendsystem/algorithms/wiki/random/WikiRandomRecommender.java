@@ -57,7 +57,7 @@ public class WikiRandomRecommender implements RecommendAlgorithm {
             if (delta > 0) {
                 int i = Math.min(delta, itemList.size());
                 while (i-- > 0)
-                    toBeRecommended.add(itemList.get(i).getAuto_id());
+                    toBeRecommended.add(itemList.get(i).getWiki_info_id());
             }
             logger.info("本次随机推荐为该用户生成：" + toBeRecommended.size() + " 条");
 

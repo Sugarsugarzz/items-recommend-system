@@ -18,5 +18,8 @@ public interface UserMapper {
 
     List<User> findWikiPrefListByUserIDs(@Param("userIDs") Collection<Long> userIDs);
 
-    void updateWikiPrefListByUserID(@Param("prefList") String prefList, @Param("userID") Long userID);
+    void updateWikiPrefListByUserID(@Param("wikiPrefList") String wikiPrefList, @Param("userID") Long userID);
+
+    List<String> findAllWikiModuleName();
+
 }

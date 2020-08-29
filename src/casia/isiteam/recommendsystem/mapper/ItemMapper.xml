@@ -13,6 +13,16 @@
         </where>
     </select>
 
+    <select id="findWikiItemsByIDs" resultType="casia.isiteam.recommendsystem.model.Item">
+        SELECT wiki_info_id, `name`, summary, classifyName
+        FROM wiki_info_ref
+        <where>
+            <foreach collection="itemIDs" open="wiki_info_id in (" close=")" item="id" separator=",">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
     <select id="findItemsByPublishTime" resultType="casia.isiteam.recommendsystem.model.Item">
         SELECT id, infoTitle, infoDesc, classifySubName
         FROM toutiao_info_ref
@@ -27,8 +37,8 @@
     </select>
 
     <select id="findWikiItemsByPublishTime" resultType="casia.isiteam.recommendsystem.model.Item">
-        SELECT auto_id
-        FROM wiki_info
+        SELECT wiki_info_id
+        FROM wiki_info_ref
         WHERE publishTime > #{startDate}
         ORDER BY RAND() LIMIT 20
     </select>

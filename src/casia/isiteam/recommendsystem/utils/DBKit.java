@@ -68,10 +68,19 @@ public class DBKit {
     /**
      * 根据用户ID列表，获取用户的偏好关键词及TF-IDF值列表
      * @param userIDs 用户ID列表
-     * @return User列表
+     * @return User对象列表
      */
     public static List<User> getUserPrefList(Collection<Long> userIDs) {
         return userMapper.findPrefListByUserIDs(userIDs);
+    }
+
+    /**
+     * 根据用户ID列表，获取用户的wiki偏好
+     * @param userIDs 用户ID列表
+     * @return User对象列表
+     */
+    public static List<User> getUserWikiPrefList(Collection<Long> userIDs) {
+        return userMapper.findWikiPrefListByUserIDs(userIDs);
     }
 
     /**
@@ -85,12 +94,31 @@ public class DBKit {
     }
 
     /**
+     * 根据用ID，更新用户的wiki偏好
+     * @param wikiPrefList 新的偏好列表
+     * @param userID 用户ID
+     */
+    public static void updateUserWikiPrefList(String wikiPrefList, Long userID) {
+        userMapper.updateWikiPrefListByUserID(wikiPrefList, userID);
+        sqlSession.commit();
+    }
+
+    /**
      * 根据信息项ID，获取 Items
      * @param itemIDs 信息项ID列表
-     * @return Items列表
+     * @return Item对象列表
      */
     public static List<Item> getItemsByIDs(Collection<Long> itemIDs) {
         return itemMapper.findItemsByIDs(itemIDs);
+    }
+
+    /**
+     * 根据wiki项ID，获取 Items
+     * @param itemIDs wiki项ID列表
+     * @return Item对象列表
+     */
+    public static List<Item> getWikiItemsByIDs(Collection<Long> itemIDs) {
+        return itemMapper.findWikiItemsByIDs(itemIDs);
     }
 
     /**
@@ -170,6 +198,10 @@ public class DBKit {
      */
     public static List<String> getAllModuleNames() {
         return userMapper.findAllModuleName();
+    }
+
+    public static List<String> getAllWikiModuleNames() {
+        return userMapper.findAllWikiModuleName();
     }
 
     /**

@@ -40,7 +40,7 @@ public class UserPrefRefresher {
         List<User> users = DBKit.getUserPrefList(userIDs);
         for (User user : users) {
             if (user.getPref_list() == null || user.getPref_list().equals("")) {
-                String defaultPrefList = RecommendKit.getDefaultPrefList();
+                String defaultPrefList = RecommendKit.getDefaultPrefList(RecommendAlgorithm.TOUTIAO);
                 DBKit.updateUserPrefList(defaultPrefList, user.getId());
             }
         }
@@ -48,7 +48,7 @@ public class UserPrefRefresher {
         // 先对用户偏好关键词列表的TD-IDF值进行衰减更新
         decayUserPref(userIDs);
 
-        // 当日用户浏览记录  用户ID - 浏览信息项的ID列表
+        // 当日用户浏览记录  (用户ID - 浏览信息项的ID列表)
         Map<Long, ArrayList<Long>> userTodayBrowsedMap = getTodayBrowsedMap(userIDs);
         // 仅对当日有浏览记录的用户偏好进行更新；当日无用户浏览记录，则无需后面的更新步骤
         if (userTodayBrowsedMap.size() == 0) {
@@ -56,9 +56,9 @@ public class UserPrefRefresher {
             return;
         }
 
-        // 获取当日活跃用户的偏好  用户ID - 偏好列表 pre_list
+        // 获取当日活跃用户的偏好  (用户ID - 偏好列表 pre_list)
         Map<Long, String> userPrefListMap = RecommendKit.getUserPreListMap(userTodayBrowsedMap.keySet());
-        // 获取 信息项ID - 信息项模块ID 与 信息项ID - 信息项关键词列表（两种）
+        // 获取 (信息项ID - 信息项模块ID) 与 (信息项ID - 信息项关键词列表)
         Map<String, Object> itemsMap = getItemsTFIDFMap(userTodayBrowsedMap);
 
         // 遍历用户浏览记录，更新用户偏好关键词列表

@@ -18,9 +18,25 @@
         </where>
     </select>
 
+    <select id="findWikiPrefListByUserIDs" resultType="casia.isiteam.recommendsystem.model.User">
+        SELECT id, wiki_pref_list
+        FROM app_user
+        <where>
+            <foreach collection="userIDs" open="id in (" close=")" item="id" separator=",">
+                ${id}
+            </foreach>
+        </where>
+    </select>
+
     <update id="updatePrefListByUserID">
         UPDATE app_user
         SET pref_list = #{prefList}
+        WHERE id = ${userID}
+    </update>
+
+    <update id="updateWikiPrefListByUserID">
+        UPDATE app_user
+        SET wiki_pref_list = #{wikiPrefList}
         WHERE id = ${userID}
     </update>
 
@@ -28,6 +44,12 @@
         SELECT classifyName
         FROM info_ref_calssify_type
         WHERE classifyParentId != -1 and info_type = 1
+    </select>
+
+    <select id="findAllWikiModuleName" resultType="java.lang.String">
+        SELECT classifyName
+        FROM info_ref_calssify_type
+        WHERE classifyParentId = -1 and info_type = 2
     </select>
 
 </mapper>

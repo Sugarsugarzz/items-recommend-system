@@ -8,29 +8,35 @@ public class Item {
     // 信息项id
     private long id;
     // wiki项id
-    private long auto_id;
+    private long wiki_info_id;
     // wiki项名
     private String name;
     // 摘要
     private String infoDesc;
+    // wiki摘要
+    private String summary;
     // 发布时间
     private String publishTime;
     // 标题
     private String infoTitle;
-    // 所属模块名
+    // 所属大模块名
+    private String classifyName;
+    // 所属子模块名
     private String classifySubName;
 
 
     public Item() {
     }
 
-    public Item(long id, long auto_id, String name, String infoDesc, String publishTime, String infoTitle, String classifySubName) {
+    public Item(long id, long wiki_info_id, String name, String infoDesc, String summary, String publishTime, String infoTitle, String classifyName, String classifySubName) {
         this.id = id;
-        this.auto_id = auto_id;
+        this.wiki_info_id = wiki_info_id;
         this.name = name;
         this.infoDesc = infoDesc;
+        this.summary = summary;
         this.publishTime = publishTime;
         this.infoTitle = infoTitle;
+        this.classifyName = classifyName;
         this.classifySubName = classifySubName;
     }
 
@@ -42,12 +48,12 @@ public class Item {
         this.id = id;
     }
 
-    public long getAuto_id() {
-        return auto_id;
+    public long getWiki_info_id() {
+        return wiki_info_id;
     }
 
-    public void setAuto_id(long auto_id) {
-        this.auto_id = auto_id;
+    public void setWiki_info_id(long wiki_info_id) {
+        this.wiki_info_id = wiki_info_id;
     }
 
     public String getName() {
@@ -66,6 +72,14 @@ public class Item {
         this.infoDesc = infoDesc;
     }
 
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
     public String getPublishTime() {
         return publishTime;
     }
@@ -82,6 +96,14 @@ public class Item {
         this.infoTitle = infoTitle;
     }
 
+    public String getClassifyName() {
+        return classifyName;
+    }
+
+    public void setClassifyName(String classifyName) {
+        this.classifyName = classifyName;
+    }
+
     public String getClassifySubName() {
         return classifySubName;
     }
@@ -94,11 +116,13 @@ public class Item {
     public String toString() {
         return "Item{" +
                 "id=" + id +
-                ", auto_id=" + auto_id +
+                ", wiki_info_id=" + wiki_info_id +
                 ", name='" + name + '\'' +
                 ", infoDesc='" + infoDesc + '\'' +
+                ", summary='" + summary + '\'' +
                 ", publishTime='" + publishTime + '\'' +
                 ", infoTitle='" + infoTitle + '\'' +
+                ", classifyName='" + classifyName + '\'' +
                 ", classifySubName='" + classifySubName + '\'' +
                 '}';
     }
