@@ -22,14 +22,14 @@ public class Main {
             CB - 基于内容推荐 Content-Based
             HR - 基于热点推荐 Hot Recommendation
             RR - 随机推荐 Random Recommendation  冷启动随机补充推荐
-            flag -  头条 1，百科  2
+            infoType -  头条 1，百科  2
          */
 
         boolean isEnableCF = false;
         boolean isEnableCB = true;
         boolean isEnableHR = false;
         boolean isEnableRR = false;
-        int flag = 2;
+        int infoType = 2;
 
         logger.info("算法启用状态："
                 + "基于用户的协同过滤 - " + isEnableCF + " | "
@@ -39,12 +39,12 @@ public class Main {
                 + "at " + new Date());
 
         // 为所有用户执行一次推荐
-//        new JobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, flag).executeInstantJobForAllUsers();
+//        new JobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, infoType).executeInstantJobForAllUsers();
 
         // 为特定用户执行一次推荐
         List<Long> users = new ArrayList<>();
         users.add(2L);
-        new JobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, flag).executeInstantJobForCertainUsers(users);
+        new JobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, infoType).executeInstantJobForCertainUsers(users);
 
     }
 }

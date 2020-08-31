@@ -1,12 +1,9 @@
 package casia.isiteam.recommendsystem.utils;
 
-import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
 import casia.isiteam.recommendsystem.model.User;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

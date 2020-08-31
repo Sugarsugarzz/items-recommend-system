@@ -25,11 +25,11 @@ public class DBKit {
 
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
-    static SqlSession sqlSession;
     static UserMapper userMapper;
     static ItemMapper itemMapper;
     static ItemLogMapper itemLogMapper;
     static RecommendationMapper recommendationMapper;
+    static SqlSession sqlSession;
 
     static {
         // 加载 MyBatis配置文件

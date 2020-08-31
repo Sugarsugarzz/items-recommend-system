@@ -4,7 +4,6 @@ import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.Item;
 import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.User;
-import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.ConfigKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;

@@ -12,13 +12,13 @@
         <!--    开启二级缓存    -->
 <!--        <setting name="cacheEnabled" value="true"/>-->
         <!--    设置数据库连接超时时间    -->
-        <setting name="defaultStatementTimeout" value="20"/>
+        <setting name="defaultStatementTimeout" value="15"/>
     </settings>
     
     <!-- 配置MyBatis运⾏环境 -->
     <environments default="development">
         <environment id="development">
-            <!-- 配置JDBC事务管理理 -->
+            <!-- 配置JDBC事务管理 -->
             <transactionManager type="JDBC"></transactionManager>
             <!-- POOLED配置JDBC数据源连接池 -->
             <dataSource type="POOLED">
@@ -31,7 +31,11 @@
     </environments>
 
     <mappers>
-        <package name="casia.isiteam.recommendsystem.mapper"/>
+<!--        <package name="casia.isiteam.recommendsystem.mapper"/>-->
+        <mapper resource="casia/isiteam/recommendsystem/mapper/UserMapper.xml"></mapper>
+        <mapper resource="casia/isiteam/recommendsystem/mapper/RecommendationMapper.xml"></mapper>
+        <mapper resource="casia/isiteam/recommendsystem/mapper/ItemMapper.xml"></mapper>
+        <mapper resource="casia/isiteam/recommendsystem/mapper/ItemLogMapper.xml"></mapper>
     </mappers>
 
 </configuration>

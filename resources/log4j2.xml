@@ -5,10 +5,10 @@
         <Property name="file.log.pattern">%d{YYYY-MM-dd HH:mm:ss} [%C] %-5level %logger{36} -  %msg%n</Property>
         <Property name="console.log.pattern">%highlight{%d{YYYY-MM-dd HH:mm:ss} [%C] %-5level %logger{36}} -  %msg%n</Property>
         <!-- 定义文件名变量 -->
-        <Property name="err.filename">log/err.log</Property>
-        <Property name="err.pattern">log/err.%i.log.gz</Property>
-        <Property name="log.filename">log/log.log</Property>
-        <Property name="log.pattern">log/log.%i.log.gz</Property>
+        <Property name="err.filename">recommend_system_log/err.log</Property>
+        <Property name="err.pattern">recommend_system_log/err.%i.log.gz</Property>
+        <Property name="log.filename">recommend_system_log/debug.log</Property>
+        <Property name="log.pattern">recommend_system_log/debug.%i.log.gz</Property>
     </Properties>
 
     <!-- 定义Appender，即目的地 -->
@@ -23,7 +23,7 @@
             <PatternLayout pattern="${file.log.pattern}" />
             <Policies>
                 <!-- 根据文件大小自动切割日志 -->
-                <SizeBasedTriggeringPolicy size="5 MB" />
+                <SizeBasedTriggeringPolicy size="10 MB" />
             </Policies>
             <!-- 保留最近10份 -->
             <DefaultRolloverStrategy max="10" />
@@ -33,7 +33,7 @@
             <PatternLayout pattern="${file.log.pattern}" />
             <Policies>
                 <!-- 根据文件大小自动切割日志 -->
-                <SizeBasedTriggeringPolicy size="5 MB" />
+                <SizeBasedTriggeringPolicy size="10 MB" />
             </Policies>
             <!-- 保留最近10份 -->
             <DefaultRolloverStrategy max="10" />
