@@ -43,7 +43,6 @@ public class Main {
 
         // 为特定用户执行一次推荐
         List<Long> users = new ArrayList<>();
-//        users.add(1L);
         users.add(2L);
         new JobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, flag).executeInstantJobForCertainUsers(users);
 

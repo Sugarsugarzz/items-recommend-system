@@ -2,7 +2,7 @@ package casia.isiteam.recommendsystem.algorithms.toutiao.cb;
 
 import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.Item;
-import casia.isiteam.recommendsystem.utils.ConfigGetKit;
+import casia.isiteam.recommendsystem.utils.ConfigKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import casia.isiteam.recommendsystem.utils.TFIDF;
@@ -23,9 +23,9 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // TFIDF算法提取关键词的次数
-    private static final int KEY_WORDS_NUM = ConfigGetKit.getInt("TFIDFKeywordsNum");
+    private static final int KEY_WORDS_NUM = ConfigKit.TFIDFKeywordsNum;
     // 利用基于内容推荐算法给每个用户推荐的信息项条数
-    private static final int recNum = ConfigGetKit.getInt("CBRecNum");
+    private static final int recNum = ConfigKit.CBRecommendNum;
 
 
     /**

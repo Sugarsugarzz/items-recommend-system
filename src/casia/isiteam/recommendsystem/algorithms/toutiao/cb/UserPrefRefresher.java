@@ -4,7 +4,7 @@ import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.Item;
 import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.User;
-import casia.isiteam.recommendsystem.utils.ConfigGetKit;
+import casia.isiteam.recommendsystem.utils.ConfigKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import casia.isiteam.recommendsystem.utils.TFIDF;
@@ -26,9 +26,9 @@ public class UserPrefRefresher {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // TFIDF算法提取关键词的次数
-    private static final int KEY_WORDS_NUM = ConfigGetKit.getInt("TFIDFKeywordsNum");
+    private static final int KEY_WORDS_NUM = ConfigKit.TFIDFKeywordsNum;
     // 用户偏好每日衰减系数
-    private static final double decayNum = ConfigGetKit.getDouble("decayNum");
+    private static final double decayNum = ConfigKit.decayNum;
 
     /**
      * 定期根据用户前一天的浏览记录，对用户的偏好关键词列表TD-IDF值进行衰减后，将用户前一天看的信息项的关键词及TD-IDF值更新到偏好列表中。

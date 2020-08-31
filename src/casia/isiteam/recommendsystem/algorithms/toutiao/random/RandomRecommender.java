@@ -2,7 +2,7 @@ package casia.isiteam.recommendsystem.algorithms.toutiao.random;
 
 import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.Item;
-import casia.isiteam.recommendsystem.utils.ConfigGetKit;
+import casia.isiteam.recommendsystem.utils.ConfigKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import org.apache.logging.log4j.LogManager;
@@ -19,9 +19,9 @@ public class RandomRecommender implements RecommendAlgorithm {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // 热点信息项的有效时间
-    private static final int beforeDays = ConfigGetKit.getInt("randomBeforeDays");
+    private static final int beforeDays = ConfigKit.RandomBeforeDays;
     // 其他三种算法推荐数量不够（一般冷启动），使用随机补充推荐
-    private static final int totalRecNum = ConfigGetKit.getInt("totalNum");
+    private static final int totalRecNum = ConfigKit.TotalNum;
 
     /**
      * RR 算法 推荐主函数

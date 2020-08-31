@@ -22,8 +22,7 @@ public class RecommendKit {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // 推荐信息项的时效性天数，即从推荐当天开始到之前的 beforeDays 天的信息项仍然具有时效性，予以推荐
-    private static final int beforeDays = ConfigGetKit.getInt("recommendBeforeDays");
-//    private static final int beforeDays = -1;
+    private static final int beforeDays = ConfigKit.RecommendBeforeDays;
 
     /**
      * 在当日基础上增加/减少天数后的日期字符串

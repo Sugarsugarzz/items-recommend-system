@@ -8,7 +8,6 @@ import casia.isiteam.recommendsystem.algorithms.wiki.cb.WikiContentBasedRecommen
 import casia.isiteam.recommendsystem.algorithms.wiki.cf.WikiUserBasedCollaborativeFilteringRecommender;
 import casia.isiteam.recommendsystem.algorithms.wiki.hr.WikiHotRecommender;
 import casia.isiteam.recommendsystem.algorithms.wiki.random.WikiRandomRecommender;
-import casia.isiteam.recommendsystem.utils.ConfigGetKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,8 +33,6 @@ public class JobSetter {
      * @param flag 头条 1，百科 2
      */
     public JobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR, boolean isEnableRR, int flag) {
-        // 加载配置文件
-        ConfigGetKit.loadProperties("config");
         // 初始化算法选择
         this.isEnableCF = isEnableCF;
         this.isEnableCB = isEnableCB;

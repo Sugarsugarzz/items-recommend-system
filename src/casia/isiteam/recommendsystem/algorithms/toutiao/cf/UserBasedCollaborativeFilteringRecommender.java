@@ -2,7 +2,7 @@ package casia.isiteam.recommendsystem.algorithms.toutiao.cf;
 
 import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
 import casia.isiteam.recommendsystem.model.ItemLog;
-import casia.isiteam.recommendsystem.utils.ConfigGetKit;
+import casia.isiteam.recommendsystem.utils.ConfigKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
@@ -33,9 +33,9 @@ public class UserBasedCollaborativeFilteringRecommender implements RecommendAlgo
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // 计算用户相似度时的时效天数
-    private static final int recValidDays = ConfigGetKit.getInt("CFValidDay");
+    private static final int recValidDays = ConfigKit.CFValidDays;
     // 利用协同过滤算法给每个用户推荐的信息项条数
-    private static final int recNum = ConfigGetKit.getInt("CFRecNum");
+    private static final int recNum = ConfigKit.CFRecommendNum;
 
 
     /**
