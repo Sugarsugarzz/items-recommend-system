@@ -131,6 +131,15 @@ public class DBKit {
     }
 
     /**
+     * 根据起始发布日期，获取 WikiItems
+     * @param startDate 起始日期
+     * @return WikiItems列表
+     */
+    public static List<Item> getWikiItemsByPublishTime(String startDate) {
+        return itemMapper.findWikiItemsByPublishTime(startDate);
+    }
+
+    /**
      * 根据有效起始日期，从各领域抽取一些 Items
      * @param startDate 有效起始日期
      * @return Items列表
@@ -140,12 +149,12 @@ public class DBKit {
     }
 
     /**
-     * 根据有效起始日期，从 wiki_info表 抽取一些 Items
+     * 根据有效起始日期，从 wiki_info表 分组随机抽取一些 Items
      * @param startDate 有效起始日期
      * @return Items列表
      */
-    public static List<Item> getWikiItemsByPublishTime(String startDate) {
-        return itemMapper.findWikiItemsByPublishTime(startDate);
+    public static List<Item> getGroupWikiItemsByPublishTime(String startDate) {
+        return itemMapper.findGroupWikiItemsByPublishTime(startDate);
     }
 
     /**

@@ -125,17 +125,17 @@ public class WikiUserBasedCollaborativeFilteringRecommender implements Recommend
      * ref_data_id  信息项ID
      * view_time 浏览时间戳
      */
-    private static DataModel getDataModel() throws TasteException {
-        // TODO
+    private static DataModel getDataModel() {
+
+        // 获取时效内的 Items
         Map<Long, List<Long>> map = new HashMap<>();
         List<ItemLog> itemLogs = DBKit.getBrowsedItemsByDate(RecommendKit.getInRecDate(recValidDays), RecommendAlgorithm.WIKI);
         for (ItemLog itemLog : itemLogs) {
             if (!map.containsKey(itemLog.getUser_id()))
                 map.put(itemLog.getUser_id(), new ArrayList<>());
             map.get(itemLog.getUser_id()).add(itemLog.getRef_data_id());
-
         }
-
+        // 构建无偏好模型
         FastByIDMap fastByIDMap = new FastByIDMap();
         for (Long userID : map.keySet()) {
             List<Long> list = map.get(userID);
@@ -144,18 +144,8 @@ public class WikiUserBasedCollaborativeFilteringRecommender implements Recommend
                 set.add(aLong);
             }
             fastByIDMap.put(userID, set);
-            System.out.println(fastByIDMap);
         }
+
         return new GenericBooleanPrefDataModel(fastByIDMap);
-
-
-//        MysqlDataSource dataSource = new MysqlDataSource();
-//        dataSource.setServerName("192.168.10.231");
-//        dataSource.setPort(3307);
-//        dataSource.setUser("bj");
-//        dataSource.setPassword("bj2016");
-//        dataSource.setDatabaseName("zbzs");
-//        MySQLBooleanPrefJDBCDataModel jdbcDataModel = new MySQLBooleanPrefJDBCDataModel(dataSource, "user_read_record", "user_id", "ref_data_id", "insert_time");
-//        return new ReloadFromJDBCDataModel(jdbcDataModel);
     }
 }

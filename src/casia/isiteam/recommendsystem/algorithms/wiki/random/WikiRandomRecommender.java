@@ -50,7 +50,7 @@ public class WikiRandomRecommender implements RecommendAlgorithm {
             System.out.println("需要随机算法补充的信息项数量为： " + delta + " 条");
 
             // 获取时效内的随机wiki词条项
-            List<Item> itemList = DBKit.getWikiItemsByPublishTime(RecommendKit.getInRecDate(beforeDays));
+            List<Item> itemList = DBKit.getGroupWikiItemsByPublishTime(RecommendKit.getInRecDate(beforeDays));
 
             // 初始化最终推荐信息项列表
             Set<Long> toBeRecommended = new HashSet<>();

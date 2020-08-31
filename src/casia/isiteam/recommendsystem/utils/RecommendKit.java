@@ -91,6 +91,8 @@ public class RecommendKit {
         for (String name : moduleNames) {
             jsonObject.put(name, new JSONObject());
         }
+        jsonObject.put("其他", new JSONObject());
+
         return jsonObject.toJSONString();
     }
 

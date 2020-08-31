@@ -1,12 +1,17 @@
 package casia.isiteam.recommendsystem.algorithms.toutiao.cf;
 
 import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
+import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.utils.ConfigGetKit;
+import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.mahout.cf.taste.common.TasteException;
+import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
+import org.apache.mahout.cf.taste.impl.common.FastIDSet;
+import org.apache.mahout.cf.taste.impl.model.GenericBooleanPrefDataModel;
 import org.apache.mahout.cf.taste.impl.model.jdbc.MySQLBooleanPrefJDBCDataModel;
 import org.apache.mahout.cf.taste.impl.model.jdbc.ReloadFromJDBCDataModel;
 import org.apache.mahout.cf.taste.impl.neighborhood.NearestNUserNeighborhood;
@@ -18,10 +23,7 @@ import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 import org.apache.mahout.cf.taste.recommender.Recommender;
 import org.apache.mahout.cf.taste.similarity.UserSimilarity;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 基于用户的协同过滤推荐算法实现
@@ -64,7 +66,7 @@ public class UserBasedCollaborativeFilteringRecommender implements RecommendAlgo
             // 指定用户相似度计算方法，这里采用对数似然相似度
             UserSimilarity similarity = new LogLikelihoodSimilarity(dataModel);
             // 指定最近邻用户数量，这里为5
-            UserNeighborhood neighborhood = new NearestNUserNeighborhood(2, similarity, dataModel);
+            UserNeighborhood neighborhood = new NearestNUserNeighborhood(3, similarity, dataModel);
             // 构建协同过滤推荐模型
             Recommender recommender = new GenericUserBasedRecommender(dataModel, neighborhood, similarity);
 
@@ -111,19 +113,39 @@ public class UserBasedCollaborativeFilteringRecommender implements RecommendAlgo
      * ref_data_id  信息项ID
      * view_time 浏览时间戳
      */
-    private static ReloadFromJDBCDataModel getDataModel() throws TasteException {
+    private static DataModel getDataModel() throws TasteException {
         // 这步后面可以的话改成直接用 Mybatis 获取 DataSource
         // Warning: You are not using ConnectionPoolDataSource. 需要给userID和itemID添加索引，否则会导致速度慢。
         // 事实上不需要连接池，基于内存的ReloadFromJDBCDataModel可以解决速度慢的问题。
-        // TODO
-        MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setServerName("192.168.10.231");
-        dataSource.setPort(3307);
-        dataSource.setUser("bj");
-        dataSource.setPassword("bj2016");
-        dataSource.setDatabaseName("zbzs");
-        MySQLBooleanPrefJDBCDataModel jdbcDataModel = new MySQLBooleanPrefJDBCDataModel(dataSource, "user_read_record", "user_id", "ref_data_id", "insert_time");
-        return new ReloadFromJDBCDataModel(jdbcDataModel);
+//        MysqlDataSource dataSource = new MysqlDataSource();
+//        dataSource.setServerName("192.168.10.231");
+//        dataSource.setPort(3307);
+//        dataSource.setUser("bj");
+//        dataSource.setPassword("bj2016");
+//        dataSource.setDatabaseName("zbzs");
+//        MySQLBooleanPrefJDBCDataModel jdbcDataModel = new MySQLBooleanPrefJDBCDataModel(dataSource, "user_read_record", "user_id", "ref_data_id", "insert_time");
+//        return new ReloadFromJDBCDataModel(jdbcDataModel);
+
+        // 获取时效内的 Items
+        Map<Long, List<Long>> map = new HashMap<>();
+        List<ItemLog> itemLogs = DBKit.getBrowsedItemsByDate(RecommendKit.getInRecDate(recValidDays), RecommendAlgorithm.TOUTIAO);
+        for (ItemLog itemLog : itemLogs) {
+            if (!map.containsKey(itemLog.getUser_id()))
+                map.put(itemLog.getUser_id(), new ArrayList<>());
+            map.get(itemLog.getUser_id()).add(itemLog.getRef_data_id());
+        }
+        // 构建无偏好模型
+        FastByIDMap fastByIDMap = new FastByIDMap();
+        for (Long userID : map.keySet()) {
+            List<Long> list = map.get(userID);
+            FastIDSet set = new FastIDSet();
+            for (Long aLong : list) {
+                set.add(aLong);
+            }
+            fastByIDMap.put(userID, set);
+        }
+
+        return new GenericBooleanPrefDataModel(fastByIDMap);
     }
 
 }

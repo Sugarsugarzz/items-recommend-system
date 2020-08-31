@@ -71,9 +71,7 @@ public class WikiUserPrefRefresher {
             // 内层循环：遍历用户看过的每个wiki项，将wiki项的关键词列表和TD-IDF值更新到用户偏好中
             ArrayList<Long> itemIDs = userTodayBrowsedMap.get(userID);
             for (Long itemID : itemIDs) {
-                String moduleName = getWikiModuleName((String) itemsMap.get(itemID + "-ModuleName"));
-                if (moduleName == null)
-                    continue;
+                String moduleName = (String) itemsMap.get(itemID + "-ModuleName");
 
                 // 获取该用户在该模块下的偏好
                 Map<String, Object> moduleMap = (Map<String, Object>) map.get(moduleName);
@@ -162,6 +160,20 @@ public class WikiUserPrefRefresher {
     }
 
     /**
+     * 将当日所有被浏览过的wiki项提取出来，进行TF-IDF求值操作，并对用户偏好关键词列表进行更新
+     */
+    public Map<String, Object> getItemsTFIDFMap(Map<Long, ArrayList<Long>> userTodayBrowsedMap) {
+        Map<String, Object> map = new HashMap<>();
+        List<Item> itemList = DBKit.getWikiItemsByIDs(getTodayBrowsedItemsSet(userTodayBrowsedMap));
+        for (Item item : itemList) {
+            map.put(String.valueOf(item.getWiki_info_id()), TFIDF.getKeywordsByTFIDE(item.getName(), item.getSummary(), KEY_WORDS_NUM));
+            map.put(item.getWiki_info_id() + "-ModuleName", getWikiModuleName(item.getClassifyName()));
+        }
+
+        return map;
+    }
+
+    /**
      * 从JSON列表格式中获取WIKI模块
      * @param moduleNameArray JSON列表
      * @return 模块名
@@ -175,21 +187,7 @@ public class WikiUserPrefRefresher {
                 return name;
             }
         }
-        return null;
-    }
-
-    /**
-     * 将当日所有被浏览过的wiki项提取出来，进行TF-IDF求值操作，并对用户偏好关键词列表进行更新
-     */
-    public Map<String, Object> getItemsTFIDFMap(Map<Long, ArrayList<Long>> userTodayBrowsedMap) {
-        Map<String, Object> map = new HashMap<>();
-        List<Item> itemList = DBKit.getWikiItemsByIDs(getTodayBrowsedItemsSet(userTodayBrowsedMap));
-        for (Item item : itemList) {
-            map.put(String.valueOf(item.getWiki_info_id()), TFIDF.getKeywordsByTFIDE(item.getName(), item.getSummary(), KEY_WORDS_NUM));
-            map.put(item.getWiki_info_id() + "-ModuleName", item.getClassifyName());
-        }
-
-        return map;
+        return "其他";
     }
 
     /**
