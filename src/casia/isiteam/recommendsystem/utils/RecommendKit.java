@@ -74,7 +74,7 @@ public class RecommendKit {
      * 用户偏好为 null，根据模块名补充默认偏好
      * @param infoType 头条 or 百科
      */
-    public static String getDefaultPrefList(int infoType) {
+    public static JSONObject getDefaultPrefList(int infoType) {
 
         List<String> moduleNames;
         if (infoType == 1) {
@@ -89,7 +89,7 @@ public class RecommendKit {
         }
         jsonObject.put("其他", new JSONObject());
 
-        return jsonObject.toJSONString();
+        return jsonObject;
     }
 
     /**
@@ -131,7 +131,7 @@ public class RecommendKit {
 
         List<ItemLog> userBrowsedItems = DBKit.getUserBrowsedItems(userID, infoType);
         for (ItemLog itemLog : userBrowsedItems) {
-            System.out.println("用户浏览过的信息项id - " + itemLog.getRef_data_id());
+//            System.out.println("用户浏览过的信息项id - " + itemLog.getRef_data_id());
             recItemList.remove(itemLog.getRef_data_id());
         }
     }
@@ -149,7 +149,7 @@ public class RecommendKit {
 
         List<Recommendation> userRecommendedItems = DBKit.getUserRecommendedItems(userID, getInRecDate(), infoType);
         for (Recommendation recommendation : userRecommendedItems) {
-            System.out.println("已向用户推荐过的信息项id - " + recommendation.getItem_id());
+//            System.out.println("已向用户推荐过的信息项id - " + recommendation.getItem_id());
             recItemList.remove(recommendation.getItem_id());
         }
     }
@@ -185,7 +185,7 @@ public class RecommendKit {
     public static void insertRecommendations(Long userID, Collection<Long> recommendItemIDs, int algorithm_type, int infoType) {
 
         for (Long recommendItemID : recommendItemIDs) {
-            System.out.println("本次向用户推荐的信息项id - " + recommendItemID);
+//            System.out.println("本次向用户推荐的信息项id - " + recommendItemID);
             DBKit.saveRecommendation(userID, recommendItemID, algorithm_type, infoType);
         }
     }

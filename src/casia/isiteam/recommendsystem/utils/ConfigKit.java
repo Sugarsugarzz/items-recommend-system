@@ -12,13 +12,13 @@ public class ConfigKit {
     public static final int RecommendBeforeDays = -20;
 
     // 每次向用户推荐的信息项总数
-    public static final int TotalNum = 80;
+    public static final int TotalNum = 90;
 
     /*
     Collaborative Filtering Recommendation
      */
     // 利用协同过滤算法每次推荐的信息项数量
-    public static final int CFRecommendNum = 30;
+    public static final int CFRecommendNum = 40;
 
     // 计算用户相似度时的时效天数
     public static final int CFValidDays = -30;
@@ -27,7 +27,7 @@ public class ConfigKit {
     Content-based Recommendation
      */
     // 利用基于内容推荐算法每次推荐的信息项数量
-    public static final int CBRecommendNum = 30;
+    public static final int CBRecommendNum = 40;
 
     // TF-IDF提取关键词数量
     public static final int TFIDFKeywordsNum = 10;

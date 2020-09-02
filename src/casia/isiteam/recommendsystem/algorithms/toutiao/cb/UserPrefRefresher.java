@@ -36,12 +36,21 @@ public class UserPrefRefresher {
      */
     public void refresher(Collection<Long> userIDs) {
 
-        // 对用户偏好为 null 的设置默认偏好
+        // 对用户偏好进行更新
         List<User> users = DBKit.getUserPrefList(userIDs);
         for (User user : users) {
+            JSONObject defaultPrefList = RecommendKit.getDefaultPrefList(RecommendAlgorithm.TOUTIAO);
+
             if (user.getPref_list() == null || user.getPref_list().equals("")) {
-                String defaultPrefList = RecommendKit.getDefaultPrefList(RecommendAlgorithm.TOUTIAO);
-                DBKit.updateUserPrefList(defaultPrefList, user.getId());
+                DBKit.updateUserPrefList(defaultPrefList.toJSONString(), user.getId());
+            } else {
+                JSONObject userPrefList = JSONObject.parseObject(user.getPref_list());
+                for (String key : defaultPrefList.keySet()) {
+                    if (!userPrefList.containsKey(key)) {
+                        userPrefList.put(key, new JSONObject());
+                    }
+                }
+                DBKit.updateUserPrefList(userPrefList.toJSONString(), user.getId());
             }
         }
 
@@ -140,7 +149,7 @@ public class UserPrefRefresher {
     public Map<Long, ArrayList<Long>> getTodayBrowsedMap(Collection<Long> userIDs) {
         Map<Long, ArrayList<Long>> map = new HashMap<>();
 
-        List<ItemLog> todayBrowsedList = DBKit.getBrowsedItemsByDate(RecommendKit.getSpecificDayFormat(0), RecommendAlgorithm.TOUTIAO);
+        List<ItemLog> todayBrowsedList = DBKit.getBrowsedItemsByDate(RecommendKit.getSpecificDayFormat(-1), RecommendAlgorithm.TOUTIAO);
         for (ItemLog itemLog : todayBrowsedList) {
             if (!userIDs.contains(itemLog.getUser_id())) {
                 continue;

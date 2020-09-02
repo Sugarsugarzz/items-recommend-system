@@ -43,11 +43,11 @@ public class WikiRandomRecommender implements RecommendAlgorithm {
 
             // 获取当日已经用其他三种算法为当前用户推荐的数量，若数量达不到推荐总数要求，则随机补充推荐
             long todayRecCount = DBKit.getRecommendationCountByUserAndTime(todayTimestamp, userID, RecommendAlgorithm.WIKI);
-            System.out.println("用户ID：" + userID + "\n当日已向该用户推荐信息项： " + todayRecCount + " 条");
+            logger.info("用户ID：" + userID + "\n当日已向该用户推荐信息项： " + todayRecCount + " 条");
 
             // 计算差值（即需要用RR算法推荐的信息项数量）
             int delta = totalRecNum - (int) todayRecCount;
-            System.out.println("需要随机算法补充的信息项数量为： " + delta + " 条");
+            logger.info("需要随机算法补充的信息项数量为： " + delta + " 条");
 
             // 获取时效内的随机wiki词条项
             List<Item> itemList = DBKit.getGroupWikiItemsByPublishTime(RecommendKit.getInRecDate(beforeDays));
@@ -69,7 +69,6 @@ public class WikiRandomRecommender implements RecommendAlgorithm {
             RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.RR, RecommendAlgorithm.WIKI);
             logger.info("本次向用户 " + userID +" 成功推荐：" + toBeRecommended);
 
-            System.out.println("================================================");
             count += toBeRecommended.size();
         }
 

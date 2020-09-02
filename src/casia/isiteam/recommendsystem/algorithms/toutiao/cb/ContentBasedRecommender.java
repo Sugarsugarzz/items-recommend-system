@@ -81,7 +81,7 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
                 tempMatchMap = sortMapByValue(tempMatchMap);
                 // 初始化最终推荐信息项列表
                 Set<Long> toBeRecommended = tempMatchMap.keySet();
-                System.out.println("用户ID：" + userID + "\n本次基于内容推荐为用户生成：" + toBeRecommended.size() + " 条");
+                logger.info("用户ID：" + userID + "\n本次基于内容推荐为用户生成：" + toBeRecommended.size() + " 条");
                 // 过滤已推荐过的信息项
                 RecommendKit.filterRecommendedItems(toBeRecommended, userID, RecommendAlgorithm.TOUTIAO);
                 // 过滤用户已浏览的信息项
@@ -92,7 +92,6 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
                 RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CB, RecommendAlgorithm.TOUTIAO);
                 logger.info("本次向用户 " + userID +" 成功推荐：" + toBeRecommended);
 
-                System.out.println("================================================");
                 count += toBeRecommended.size();
 
             }

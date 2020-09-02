@@ -40,9 +40,18 @@ public class WikiUserPrefRefresher {
         // 对用户偏好为 null 的设置默认偏好
         List<User> users = DBKit.getUserWikiPrefList(userIDs);
         for (User user : users) {
+            JSONObject defaultWikiPrefList = RecommendKit.getDefaultPrefList(RecommendAlgorithm.WIKI);
+
             if (user.getWiki_pref_list() == null || user.getWiki_pref_list().equals("")) {
-                String defaultWikiPrefList = RecommendKit.getDefaultPrefList(RecommendAlgorithm.WIKI);
-                DBKit.updateUserWikiPrefList(defaultWikiPrefList, user.getId());
+                DBKit.updateUserWikiPrefList(defaultWikiPrefList.toJSONString(), user.getId());
+            } else {
+                JSONObject userPrefList = JSONObject.parseObject(user.getWiki_pref_list());
+                for (String key : defaultWikiPrefList.keySet()) {
+                    if (!userPrefList.containsKey(key)) {
+                        userPrefList.put(key, new JSONObject());
+                    }
+                }
+                DBKit.updateUserWikiPrefList(userPrefList.toJSONString(), user.getId());
             }
         }
 
@@ -144,7 +153,7 @@ public class WikiUserPrefRefresher {
 
         Map<Long, ArrayList<Long>> map = new HashMap<>();
 
-        List<ItemLog> todayBrowsedList = DBKit.getBrowsedItemsByDate(RecommendKit.getSpecificDayFormat(0), RecommendAlgorithm.WIKI);
+        List<ItemLog> todayBrowsedList = DBKit.getBrowsedItemsByDate(RecommendKit.getSpecificDayFormat(-1), RecommendAlgorithm.WIKI);
         for (ItemLog itemLog : todayBrowsedList) {
             if (!userIDs.contains(itemLog.getUser_id())) {
                 continue;

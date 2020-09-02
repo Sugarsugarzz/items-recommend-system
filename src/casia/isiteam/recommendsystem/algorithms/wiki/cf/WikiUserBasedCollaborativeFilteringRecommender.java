@@ -66,8 +66,8 @@ public class WikiUserBasedCollaborativeFilteringRecommender implements Recommend
             // 指定用户相似度计算方法，这里采用对数似然相似度
             // 惩罚热门产品，利于挖掘长尾产品
             UserSimilarity similarity = new LogLikelihoodSimilarity(dataModel);
-            // 指定最近邻用户数量，这里为5
-            UserNeighborhood neighborhood = new NearestNUserNeighborhood(2, similarity, dataModel);
+            // 指定最近邻用户数量
+            UserNeighborhood neighborhood = new NearestNUserNeighborhood(6, similarity, dataModel);
             // 构建协同过滤推荐模型
             Recommender recommender = new GenericUserBasedRecommender(dataModel, neighborhood, similarity);
 
@@ -87,7 +87,7 @@ public class WikiUserBasedCollaborativeFilteringRecommender implements Recommend
 
                 // 获取算法为每个用户的推荐项
                 List<RecommendedItem> recItems = recommender.recommend(userID, recNum);
-                System.out.println("用户ID：" + userID + "\n本次协同过滤为该用户生成：" + recItems.size() + " 条");
+                logger.info("用户ID：" + userID + "\n本次协同过滤为该用户生成：" + recItems.size() + " 条");
 
                 // 初始化最终推荐信息项列表
                 Set<Long> toBeRecommended = new HashSet<>();
@@ -106,7 +106,6 @@ public class WikiUserBasedCollaborativeFilteringRecommender implements Recommend
                 RecommendKit.insertRecommendations(userID, toBeRecommended, RecommendAlgorithm.CF, RecommendAlgorithm.WIKI);
                 logger.info("本次向用户 " + userID +" 成功推荐：" + toBeRecommended);
 
-                System.out.println("================================================");
                 count += toBeRecommended.size();
             }
 

@@ -25,10 +25,10 @@ public class Main {
             infoType -  头条 1，百科  2
          */
 
-        boolean isEnableCF = false;
+        boolean isEnableCF = true;
         boolean isEnableCB = true;
-        boolean isEnableHR = false;
-        boolean isEnableRR = false;
+        boolean isEnableHR = true;
+        boolean isEnableRR = true;
         int infoType = 2;
 
         logger.info("算法启用状态："
@@ -44,7 +44,7 @@ public class Main {
         // 为特定用户执行一次推荐
         List<Long> users = new ArrayList<>();
         users.add(2L);
-        new JobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, infoType).executeInstantJobForCertainUsers(users);
+        new RecommendJobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, infoType).executeInstantJobForCertainUsers(users);
 
     }
 }

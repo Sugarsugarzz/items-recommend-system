@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * 设定/启动推荐任务的类
  */
-public class JobSetter {
+public class RecommendJobSetter {
 
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
@@ -33,7 +33,7 @@ public class JobSetter {
      * @param isEnableRR 是否启用随机推荐
      * @param infoType 头条 1，百科 2
      */
-    public JobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR, boolean isEnableRR, int infoType) {
+    public RecommendJobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR, boolean isEnableRR, int infoType) {
         // 初始化算法选择
         this.isEnableCF = isEnableCF;
         this.isEnableCB = isEnableCB;
@@ -65,8 +65,6 @@ public class JobSetter {
 
         /* 头条推荐 */
         if (infoType == 1) {
-            // 先用热点推荐器生成今日的热点信息项
-            HotRecommender.formTopHotItemList();
 
             if (isEnableCF) {
                 new UserBasedCollaborativeFilteringRecommender().recommend(userIDs);
@@ -77,6 +75,7 @@ public class JobSetter {
                 logger.info("基于内容推荐方法 推荐完成！");
             }
             if (isEnableHR) {
+                HotRecommender.formTopHotItemList();
                 new HotRecommender().recommend(userIDs);
                 logger.info("基于热点推荐方法 推荐完成！");
             }
@@ -88,8 +87,6 @@ public class JobSetter {
 
         /* 百科推荐 */
         else if (infoType == 2) {
-            // 生成当日热点百科项
-            WikiHotRecommender.formTopHotWikiItemList();
 
             if (isEnableCF) {
                 new WikiUserBasedCollaborativeFilteringRecommender().recommend(userIDs);
@@ -100,6 +97,7 @@ public class JobSetter {
                 logger.info("基于内容推荐方法 推荐完成！");
             }
             if (isEnableHR) {
+                WikiHotRecommender.formTopHotWikiItemList();
                 new WikiHotRecommender().recommend(userIDs);
                 logger.info("基于热点推荐方法 推荐完成！");
             }
