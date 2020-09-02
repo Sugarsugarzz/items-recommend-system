@@ -1,201 +1,97 @@
-### 需求
+### 1. 版本历史	
 
-<table>
-  <tr>
-  	<td>场景</td>
-    <td>需求点</td>
-    <td>是否完成</td>
-  </tr>
-	<tr>
-		<td rowspan="5" style="vertical-align:middle">算法-用户画像</td>
-		<td>能够记录用户的行为数据，结合标签信息等信息内容特征、用户特征，通过采用大数据算法和用户行为数据实现特定用户精准画像。</td>
-    <td><input type="checkbox"/></td>
-	</tr>
-  <tr>
-		<td>能够依据用户群体的行为数据，结合标签信息等信息内容特征、用户特征，对用户群体进行聚类和画像。</td>
-    <td><input type="checkbox"/></td>
-	</tr>
-  <tr>
-		<td>能够依据全部用户的行为数据，结合标签信息等信息内容特征、用户特征，对全部用户进行整体画像。</td>
-    <td><input type="checkbox"/></td>
-	</tr>
-  <tr>
-		<td>并提供工具，通过搜索用户、关注用户的方式，查看用户画像和行为数据。</td>
-    <td><input type="checkbox"/></td>
-	</tr>
-  <tr>
-		<td>根据建立的用户画像，部署本地化推荐服务，实现最新信息精准推荐，为用户提供满足其需要和兴趣的特定内容，提升用户粘度。</td>
-    <td><input type="checkbox"/></td>
-	</tr>
-</table>
+| 修订日期   | 版本号 | 修订人 | 备注                         |
+| ---------- | ------ | ------ | ---------------------------- |
+| 2020.08.31 | 1.0    | 唐     |                              |
+| 2020.09.02 | 1.1    | 唐     | 补充算法介绍及数据库修改前提 |
 
+### 2. 调用说明
 
-### 数据源
+- 调用前提
 
-​	**现在只做头条、百科的内容。**
+  需能够访问231服务器，添加jar包依赖，在程序中调用类方法即可。
 
-<table>
-  <tr>
-    <td>服务器</td>
-    <td colspan="3">231</td>
-  </tr>
-  <tr>
-    <td>端口</td>
-    <td colspan="3">3307</td>
-  </tr>  
-  <tr>
-    <td>库名</td>
-    <td colspan="3">zbzs</td>
-  </tr>  
-  <tr>
-    <td rowspan="7">表名</td>
-    <td>user_operate_info</td>
-    <td>用户操作日志表</td>
-    <td>paramid 对应 toutiao_info_ref 的 id / wiki_info_ref 的 auto_id</td>
-  </tr>  
-  <tr>
-    <td>user_read_record</td>
-    <td>用户阅读记录</td>
-    <td>info_type=1 是头条，ref_data_id 是 toutiao_info_ref 的 id ；<br>info_type=2 是百科，ref_data_id 是 wiki_info 的 auto_id </td>
-  </tr>
-  <tr>
-  	<td>data_up_info</td>
-    <td>用户点赞表</td>
-    <td>info_type=1 是头条，ref_data_id 是 toutiao_info_ref 的 id ；<br>info_type=2 是百科，ref_data_id 是 wiki_info 的 auto_id </td>
-  </tr>
-  <tr>
-  	<td>data_collection</td>
-    <td>用户收藏表</td>
-    <td>info_type=1 是头条，ref_data_id 是 toutiao_info_ref 的 id ；<br>info_type=2 是百科，ref_data_id 是 wiki_info 的 auto_id </td>    
-  </tr>
-  <tr>
-    <td>recommended_behave</td>
-    <td>推荐行为表：用户查询、订阅信息</td>
-    <td>info_type=1 是头条，ref_data_id 是 toutiao_info_ref 的 id ；<br>info_type=2 是百科，ref_data_id 是 wiki_info_ref 的 auto_id </td>    
-  </tr>  
-  <tr>
-    <td>user_search_record</td>
-    <td colspan="2">用户查询有结果的</td>
-  </tr>
-  <tr>
-    <td>user_search_history</td>
-    <td colspan="2">用户查询无结果的</td>
-  </tr>
-</table>
+- 数据库修改前提
 
+  - **app_user** 表增加 **pref_list**（text） 和 **wiki_pref_list**（text） 字段，存储用户偏好。
 
-**表映射：**
+  - **user_read_record** 表给 **user_id** 和 **ref_data_id** 分别增加普通索引。
 
-| 原始表          | 智搜库表                  | 字段映射                                                     |
-| --------------- | ------------------------- | ------------------------------------------------------------ |
-| users           | app_user                  | id - id<br />pref_list - pref_list（新添字段）               |
-| item            | toutiao_info_ref          | id - id<br />content - infoDesc<br />news_time - publishTime<br />title - infoTitle<br />module_id - classifySubName |
-| newslogs        | user_read_record          | id - id<br />user_id - user_id<br />news_id - ref_data_id（info_type=1头条，2百科）<br />view_time - insert_time |
-| newsmodules     | info_ref_calssify_type    | id - id<br />name - classifName（classifyParentId不为-1的）  |
-| recommendations | recommendations（新添表） | id - id<br />user_id - user_id<br />news_id - item_id<br />derive_time - derive_time <br />derive_algorithm - derive_algorithm |
+  - 添加 **recommendations** 表，存放推荐结果。
 
+    ```sql
+    DROP TABLE IF EXISTS `recommendations`;
+    CREATE TABLE `recommendations` (
+      `id` int(20) NOT NULL AUTO_INCREMENT,
+      `user_id` int(12) NOT NULL COMMENT '用户ID',
+      `item_id` int(12) NOT NULL COMMENT '推荐项ID，对应 ref_data_id',
+      `derive_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '生成时间',
+      `derive_algorithm` int(3) NOT NULL COMMENT '生成推荐算法',
+      `info_type` int(11) NOT NULL COMMENT '信息类型 1头条 2 百科',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ```
 
+- 调用类方法
 
+  1. 为所有用户执行一次推荐
 
-### 技术选型调研
+  ```java
+  new RecommendJobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR, boolean isEnableRR, int infoType).executeInstanceJobForAllUsers();
+  ```
 
-#### 常用推荐算法优劣
+  2. 为特定用户执行一次推荐
 
-- **基于用户的协同过滤**
+  ```java
+  new RecommendJobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR, boolean isEnableRR, int infoType).executeInstanceJobForCertainUsers(List<Long> userIDs);
+  ```
 
-  - 思想
+- 参数说明
 
-    基于用户对物品的偏好，找到相似用户，再将相似用户的偏好的东西推荐给当前用户。
+  | 参数名     | 参数类型         | 说明                     |
+  | ---------- | ---------------- | ------------------------ |
+  | isEnableCF | boolean          | 是否启用协同过滤算法推荐 |
+  | isEnableCB | boolean          | 是否启用基于内容算法推荐 |
+  | isEnableHR | boolean          | 是否启用热点推荐         |
+  | isEnableRR | boolean          | 是否启用随机推荐         |
+  | infoType   | int              | 头条 1，百科 2           |
+  | userIDs    | List&lt;Long&gt; | 特定用户的ID列表         |
 
-  - 计算
+- 调用示例
 
-    将一个用户对所有物品的偏好作为一个向量，计算**用户之间的相似度**。找到相似用户后，根据相似用户的权重及他们的物品偏好，预测当前用户未涉及的物品，计算得到一个排序的物品列表作为推荐。
-
-  - 缺陷
-
-    1. 大多数时候，用户两两之间只有很少几个共同评分，即用户之间重合度不高，且仅有的共同物品，往往是一些常见的物品。
-    2. 用户之间的距离变化可能很快，这种离线算法难以瞬间更新推荐结果。
-
-  - 场景
-
-    适用于物品比用户多、物品时效性较长的场景。
-
-    推荐结果个性化较弱、较宽泛。
-
-- **基于物品的协同过滤**
-
-  - 思想
-
-    基于所有用户对物品的偏好找到相似的物品，然后根据当前用户的历史偏好，推荐相似的物品。
-
-  - 计算
-
-    将所有用户对某个物品的偏好作为一个向量来计算**物品之间的相似度**。得到物品的相似物品后，根据用户的历史偏好来预测当前用户未涉及的物品的偏好，计算得到一个排序的物品列表作为推荐。
-
-  - 优点
-
-    1. 物品之间的距离较为稳定。
-    2. 预先计算距离，能够在线更快地生成推荐列表。
-
-  - 缺点
-
-    1. 不同领域的最热门物品之间经常具有较高的相似度。
-
-  - 场景
-
-    应用最为广泛，尤其以电商行业。
-
-    适用于用户比物品多的情况。
-
-- **基于模型的协同过滤**
-
-  - 思想
-
-    面对稀疏数据，先用历史数据得到一个模型，来用此模型进行预测。
-
-    通过机器学习方法来建模，主流方法：关联算法、聚类算法、分类算法、回归算法、矩阵分解、神经网络、图模型以及隐语义模型。
-
-- **基于内容的推荐**
-
-  - 思想
-
-    根据物品或内容的元数据，发现物品或内容的相关性，然后基于用户以往的偏好记录，给当前用户推荐相似的物品。
-
-  - 缺陷
-
-    1. 用户浏览的物品本身就不是用户的菜，再基于内容进行推荐就是伪命题。
-    2. 当前信息已经解决用户的问题，再推类似主题的会造成信息冗余。
-
-  - 场景
-
-    最直观的算法，常借助文本相似度计算。
-
-- **基于用户画像（标签）的推荐**
-
-  - 思想
-
-    依赖用户累积的行为数据，通过行为数据生成用户的兴趣标签，然后利用用户的画像属性来推荐。（注：兴趣会随时间迁移而改变）
-
+  1. 为所有用户执行一次推荐
   
+  ```java
+  new RecommendJobSetter(true, true, true, true, 1).executeInstantJobForAllUsers();
+  ```
+  
+  2. 为特定用户执行一次推荐
+  
+  ```java
+  List<Long> users = new ArrayList();
+  users.add(1L);
+  users.add(2L);
+  new RecommendJobSetter(true, true, true, true, 1).executeInstantJobForAllUsers(users);
+  ```
+  
+- 使用说明
 
-#### 主流实现流程
+  建议定时每日0点更新一次。
 
-召回 + 排序的流程方式
 
-1. 为所有的新闻打上分类和关键词标签，主要离线进行，TF-IDF、LDA和聚类方式都可，准确率可以单独评估，关键是为文章打上标签，而且是带权的标签序列，文章的属性越丰富越好，时间、地域、长短、标题关键词、图片摘要等。另外对各类别简历文章的倒排索引。
-2. 文章有标签后，可以离线或实时计算用户对类别或关键词的统计偏好，生成类别的用户画像，对单个用户来说也是带权的列表，可以存在redis中。
-3. **召回阶段**。用户请求时拿到用户画像偏好，对标签列表中各标签分别从倒排索引中捞出文章数据，数量根据画像的权重分配，这样就拿到用户基本感兴趣的内容了。
-4. **排序阶段**。基本的LR就可以。通过用户点击日志及离线计算的特征生成样本，训练模型，线上使用模型进行排序预测，生成最终的排序结果。
+### 3. 推荐结果
 
----
+​	推荐结果将存在 **recommendations** 表中，由 **derive_algorithm** 字段标注其是由哪一个推荐算法生成的，**info_type** 标注其属于百科还是头条。
 
-### 实际开发
+​	建议取时效性内（**derive_time**字段判断），**derive_algorithm** 字段数值由小到大取结果，推给用户。
 
-#### 技术选型
+​	**derive_algorithm** 数值越小，推荐项与用户的偏好越匹配。
 
-使用混合推荐：
+### 4. 使用算法介绍
 
-1. **基于协同过滤推荐（UserBased）**
+#### 使用离线方式的混合推荐：
+
+1. **基于用户的协同过滤推荐**   derive_algorithm = 0
 
    ```mermaid
    graph LR
@@ -203,20 +99,22 @@
    B --> C[针对每个用户user]
    C --> D
    D[获取用户user的相似用户排序表] --> E[选择与user最相近的K个用户]
-   E --> F[获取这K个用户浏览过,但user未浏览过的新闻]
+   E --> F[获取这K个用户浏览过,但user未浏览过的信息项]
    F --> C
    ```
 
    ​	**Mahout**：基于Java的数据挖掘与机器学习类库，提供推荐系统所需的分类、用户相似度计算，近邻用户计算等工具类。
 
-2. **基于内容的推荐**
+2. **基于内容的推荐**    derive_algorithm = 1
 
    ```mermaid
    graph LR
-   A[用户历史浏览记录] --> B[计算新闻之间在内容上的相似度]
+   A[用户历史浏览记录] --> B[获取用户偏好关键词及TD-IDF值]
    B --> C[针对每个用户user]
-   C --> D[获取与已浏览新闻相似的新闻]
-   D --> C
+   C --> D[抽取所有信息项的关键词及TF-IDF值]
+   D --> F[计算用户偏好关键词及信息项关键词的匹配值]
+   F --> E[得到匹配的信息项列表]
+   E --> C
    ```
 
    - **定义内容相似的方式**
@@ -248,76 +146,19 @@
 
      > 比如：
      >
-     > 小黑在“武器装备”头条模块的关键词列表为 {坦克：100， 枪械：200...}
+     > 小白在“武器装备”头条模块的偏好关键词列表为 {歼20：100， 运8：200，运输舰：100...}
      >
-     > “武器装备”头条模块中某个新闻的关键词列表为 {枪械：100，飞机：50}
+     > “武器装备”头条模块中某个头条的关键词列表为 {运8：100，运输舰：50，飞机：20}
      >
-     > 则小黑与该新闻的拟合度为 200 x 100 = 20000。
+     > 则小黑与该头条项的拟合度为 200 x 100 + 100 x 50 = 25000。
 
-     
+3. **基于热点的推荐**    derive_algorithm = 2
 
-3. **基于热点头条的推荐**
+   ​	即`从所有用户浏览历史中，提取出近期被用户阅读最多的头条/百科`。
 
-   ​	即`从用户浏览历史中，提取出近期被用户阅读最多的新闻`。
+   ​	设定一个每次为用户推荐的最小新闻数量 N，若通过协同过滤和内容推荐的结果小于 N，则用热点推荐方式作为补充，推荐给用户。
 
-   ​	设定一个为用户推荐的最小新闻数量 N，若通过协同过滤和内容推荐的结果小于 N，则用热点头条方式作为补充，推荐给用户。
+4. **随机补充推荐**    derive_algorithm = 3
 
-4. **随机补充推荐**
-
-   无用户浏览记录的冷冷启动情况下，向用户推荐各领域下最新的五条新闻。
-
----
-
-#### 数据库补充
-1. app_user 表增加 pref_list 和 wiki_pref_list 字段。
-2. user_read_record 表 给 user_id 和 ref_data_id 分别增加索引。
-3. 添加 recommendations 表，存放推荐结果。
-
----   
-
-#### 开发进度
-
-##### 2020.08.17
-    - 配置Log4j、Mybatis，初步搭建项目。
-
-##### 2020.08.18 
-    - 实现获取时效内的热点新闻。
-    - 部分实现基于内容的推荐系统。
-
-##### 2020.08.19
-    - 实现基于内容的推荐。
-    - 实现对特定用户执行一次推荐。
-    - 添加参数配置文件。
-    - 实现基于用户的协同过滤推荐。
-
-##### 2020.08.20
-    - 实现用户偏好衰减更新。
-    - 部分实现根据用户浏览历史，对用户偏好关键词及TF-IDF值更新。
-
-##### 2020.08.21
-    - 实现用户偏好根据浏览记录更新。
-    - 实现基于内容的推荐。
-
-##### 2020.08.24
-    - 测试优化三种算法。
-    - 实现随机补充推荐。
-
-##### 2020.08.25
-    - 实现与头条业务数据库结合。
-    
-##### 2020.08.26
-    - 引入百科业务。
-
-##### 2020.08.27 
-    - 实现百科随机推荐。
-    - 实现百科热点推荐。
-    - 实现百科基于用户协同过滤推荐。
-
-##### 2020.08.28 
-    - 部分实现百科基于内容推荐。
-    
-##### 2020.08.31
-    - 实现百科基于内容推荐。
-    - 修复头条协同过滤推荐的BUG。
-   
+   ​	整个APP均无用户浏览记录的冷启动情况下，向用户随机推荐各领域下时效性内的头条或百科。
 
