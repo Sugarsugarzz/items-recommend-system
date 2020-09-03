@@ -24,9 +24,9 @@ public class WikiContentBasedRecommender implements RecommendAlgorithm {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // TFIDF算法提取关键词的次数
-    private static final int KEY_WORDS_NUM = ConfigKit.TFIDFKeywordsNum;
+    private static final int KEY_WORDS_NUM = ConfigKit.getInt("TFIDFKeywordsNum");
     // 利用基于内容推荐算法给每个用户推荐的wiki项条数
-    private static final int recNum = ConfigKit.CBRecommendNum;
+    private static final int recNum = ConfigKit.getInt("CBRecommendNum");
 
     /**
      * CB算法 推荐主函数
@@ -82,7 +82,8 @@ public class WikiContentBasedRecommender implements RecommendAlgorithm {
                 tempMatchMap = sortMapByValue(tempMatchMap);
                 // 初始化最终推荐wiki项列表
                 Set<Long> toBeRecommended = tempMatchMap.keySet();
-                logger.info("用户ID：" + userID + "\n本次基于内容推荐为用户生成：" + toBeRecommended.size() + " 条");
+                logger.info("用户ID：" + userID);
+                logger.info("本次基于内容推荐为用户生成：" + toBeRecommended.size() + " 条");
                 // 过滤已推荐过的wiki项
                 RecommendKit.filterRecommendedItems(toBeRecommended, userID, RecommendAlgorithm.WIKI);
                 // 过滤用户已浏览的wiki项

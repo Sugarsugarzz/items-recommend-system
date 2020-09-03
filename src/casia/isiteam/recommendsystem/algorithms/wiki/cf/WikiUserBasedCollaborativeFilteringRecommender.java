@@ -33,9 +33,9 @@ public class WikiUserBasedCollaborativeFilteringRecommender implements Recommend
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // 计算用户相似度时的时效天数
-    private static final int recValidDays = ConfigKit.CFValidDays;
+    private static final int recValidDays = ConfigKit.getInt("CFValidDays");
     // 利用协同过滤算法给每个用户推荐的信息项条数
-    private static final int recNum = ConfigKit.CFRecommendNum;
+    private static final int recNum = ConfigKit.getInt("CFRecommendNum");
 
 
     /**
@@ -87,7 +87,8 @@ public class WikiUserBasedCollaborativeFilteringRecommender implements Recommend
 
                 // 获取算法为每个用户的推荐项
                 List<RecommendedItem> recItems = recommender.recommend(userID, recNum);
-                logger.info("用户ID：" + userID + "\n本次协同过滤为该用户生成：" + recItems.size() + " 条");
+                logger.info("用户ID：" + userID);
+                logger.info("本次协同过滤为该用户生成：" + recItems.size() + " 条");
 
                 // 初始化最终推荐信息项列表
                 Set<Long> toBeRecommended = new HashSet<>();

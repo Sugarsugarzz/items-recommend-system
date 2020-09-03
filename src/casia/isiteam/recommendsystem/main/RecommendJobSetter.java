@@ -68,20 +68,20 @@ public class RecommendJobSetter {
 
             if (isEnableCF) {
                 new UserBasedCollaborativeFilteringRecommender().recommend(userIDs);
-                logger.info("基于用户的协同过滤方法 推荐完成！");
+                logger.info("===================== 基于用户的协同过滤方法 推荐完成！ =====================");
             }
             if (isEnableCB) {
                 new ContentBasedRecommender().recommend(userIDs);
-                logger.info("基于内容推荐方法 推荐完成！");
+                logger.info("===================== 基于内容推荐方法 推荐完成！ =====================");
             }
             if (isEnableHR) {
                 HotRecommender.formTopHotItemList();
                 new HotRecommender().recommend(userIDs);
-                logger.info("基于热点推荐方法 推荐完成！");
+                logger.info("===================== 基于热点推荐方法 推荐完成！ =====================");
             }
             if (isEnableRR) {
                 new RandomRecommender().recommend(userIDs);
-                logger.info("随机补充推荐方法 推荐完成！");
+                logger.info("===================== 随机补充推荐方法 推荐完成！ =====================");
             }
         }
 
@@ -90,20 +90,20 @@ public class RecommendJobSetter {
 
             if (isEnableCF) {
                 new WikiUserBasedCollaborativeFilteringRecommender().recommend(userIDs);
-                logger.info("基于用户的协同过滤方法 推荐完成！");
+                logger.info("===================== 基于用户的协同过滤方法 推荐完成！ =====================");
             }
             if (isEnableCB) {
                 new WikiContentBasedRecommender().recommend(userIDs);
-                logger.info("基于内容推荐方法 推荐完成！");
+                logger.info("===================== 基于内容推荐方法 推荐完成！ =====================");
             }
             if (isEnableHR) {
                 WikiHotRecommender.formTopHotWikiItemList();
                 new WikiHotRecommender().recommend(userIDs);
-                logger.info("基于热点推荐方法 推荐完成！");
+                logger.info("===================== 基于热点推荐方法 推荐完成！ =====================");
             }
             if (isEnableRR) {
                 new WikiRandomRecommender().recommend(userIDs);
-                logger.info("随机补充推荐方法 推荐完成！");
+                logger.info("===================== 随机补充推荐方法 推荐完成！ =====================");
             }
         }
 

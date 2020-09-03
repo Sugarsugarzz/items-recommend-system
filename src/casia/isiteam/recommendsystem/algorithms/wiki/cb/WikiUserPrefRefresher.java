@@ -27,9 +27,9 @@ public class WikiUserPrefRefresher {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // TFIDF算法提取关键词的次数
-    private static final int KEY_WORDS_NUM = ConfigKit.TFIDFKeywordsNum;
+    private static final int KEY_WORDS_NUM = ConfigKit.getInt("TFIDFKeywordsNum");
     // 用户偏好每日衰减系数
-    private static final double decayNum = ConfigKit.decayNum;
+    private static final double decayNum = ConfigKit.getDouble("decayNum");
 
     /**
      * 定期根据用户前一天的浏览记录，对用户的偏好关键词列表TD-IDF值进行衰减后，将用户前一天看的wiki项的关键词及TD-IDF值更新到偏好列表中。

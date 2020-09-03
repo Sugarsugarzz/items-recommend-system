@@ -19,9 +19,9 @@ public class RandomRecommender implements RecommendAlgorithm {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // 热点信息项的有效时间
-    private static final int beforeDays = ConfigKit.RandomBeforeDays;
+    private static final int beforeDays = ConfigKit.getInt("RandomBeforeDays");
     // 其他三种算法推荐数量不够（一般冷启动），使用随机补充推荐
-    private static final int totalRecNum = ConfigKit.TotalNum;
+    private static final int totalRecNum = ConfigKit.getInt("TotalNum");
 
     /**
      * RR 算法 推荐主函数
@@ -39,7 +39,8 @@ public class RandomRecommender implements RecommendAlgorithm {
         for (Long userID : userIDs) {
             // 获取当日已经用其他三种算法为当前用户推荐的数量，若数量达不到推荐总数要求，则随机补充推荐
             long todayRecCount = DBKit.getRecommendationCountByUserAndTime(todayTimestamp, userID, RecommendAlgorithm.TOUTIAO);
-            logger.info("用户ID：" + userID + "\n当日已向该用户推荐信息项： " + todayRecCount + " 条");
+            logger.info("用户ID：" + userID);
+            logger.info("当日已向该用户推荐信息项： " + todayRecCount + " 条");
 
             // 计算差值（即需要用RR算法推荐的信息项数量）
             int delta = totalRecNum - (int) todayRecCount;

@@ -18,9 +18,9 @@ public class HotRecommender implements RecommendAlgorithm {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     // 热点信息项的有效时间
-    private static final int beforeDays = ConfigKit.HotBeforeDays;
+    private static final int beforeDays = ConfigKit.getInt("HotBeforeDays");
     // 推荐系统每日为每位用户生成的推荐结果的总数，当CF与CB算法生成的推荐结果不足此数时，由该算法补充
-    private static final int totalRecNum = ConfigKit.TotalNum;
+    private static final int totalRecNum = ConfigKit.getInt("TotalNum");
     // 将每天生成的 热点信息项ID，按照信息项的热点程度，从高到低放入List
     private static List<Long> topHotItemList = new ArrayList<>();
 
@@ -41,7 +41,8 @@ public class HotRecommender implements RecommendAlgorithm {
         for (Long userID : userIDs) {
             // 获取当日已经用 CF 和 CB 算法为当前用户推荐的信息项数量，若数量达不到单日最低推荐数量要求，则用热点信息项补充
             long todayRecCount = DBKit.getRecommendationCountByUserAndTime(todayTimestamp, userID, RecommendAlgorithm.TOUTIAO);
-            logger.info("用户ID：" + userID + "\n当日已向该用户推荐信息项： " + todayRecCount + " 条");
+            logger.info("用户ID：" + userID);
+            logger.info("当日已向该用户推荐信息项： " + todayRecCount + " 条");
 
             // 计算差值（即需要用HR算法推荐的信息项数量）
             int delta = totalRecNum - (int) todayRecCount;

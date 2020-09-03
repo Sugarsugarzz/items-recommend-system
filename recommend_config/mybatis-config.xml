@@ -31,11 +31,7 @@
     </environments>
 
     <mappers>
-<!--        <package name="casia.isiteam.recommendsystem.mapper"/>-->
-        <mapper resource="casia/isiteam/recommendsystem/mapper/UserMapper.xml"></mapper>
-        <mapper resource="casia/isiteam/recommendsystem/mapper/RecommendationMapper.xml"></mapper>
-        <mapper resource="casia/isiteam/recommendsystem/mapper/ItemMapper.xml"></mapper>
-        <mapper resource="casia/isiteam/recommendsystem/mapper/ItemLogMapper.xml"></mapper>
+        <package name="casia.isiteam.recommendsystem.mapper"/>
     </mappers>
 
 </configuration>

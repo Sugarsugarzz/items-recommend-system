@@ -14,6 +14,8 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.*;
@@ -33,7 +35,13 @@ public class DBKit {
 
     static {
         // 加载 MyBatis配置文件
-        InputStream inputStream = DBKit.class.getClassLoader().getResourceAsStream("mybatis-config.xml");
+        InputStream inputStream;
+        try {
+            inputStream = new FileInputStream(new File(System.getProperty("user.dir") + "/recommend_config/mybatis-config.xml"));
+        } catch (Exception e) {
+            inputStream = ConfigKit.class.getClassLoader().getResourceAsStream("recommend_config/mybatis-config.xml");
+        }
+
         SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
         SqlSessionFactory sqlSessionFactory = sqlSessionFactoryBuilder.build(inputStream);
 
