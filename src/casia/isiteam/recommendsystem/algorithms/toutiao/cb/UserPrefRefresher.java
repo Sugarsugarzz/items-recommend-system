@@ -82,6 +82,8 @@ public class UserPrefRefresher {
                 String moduleName = (String) itemsMap.get(itemID + "-ModuleName");
                 // 获取该用户在该模块下的偏好
                 Map<String, Object> moduleMap = (Map<String, Object>) map.get(moduleName);
+                if (moduleMap == null)
+                    continue;
                 // 获取信息项的 关键词和TF-IDF值
                 List<Keyword> keywords = (List<Keyword>) itemsMap.get(itemID.toString());
                 for (Keyword keyword : keywords) {

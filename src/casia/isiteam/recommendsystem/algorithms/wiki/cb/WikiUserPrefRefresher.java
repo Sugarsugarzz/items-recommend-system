@@ -125,6 +125,8 @@ public class WikiUserPrefRefresher {
             for (String moduleName : map.keySet()) {
                 // key - 关键词， value - TF-IDF值
                 Map<String, Object> keywordsMap = (Map<String, Object>) map.get(moduleName);
+                if (keywordsMap == null)
+                    continue;
                 // 更新每个关键词衰减后的TF-IDF值
                 for (String key : keywordsMap.keySet()) {
                     double result = Double.parseDouble(keywordsMap.get(key).toString()) * decayNum;

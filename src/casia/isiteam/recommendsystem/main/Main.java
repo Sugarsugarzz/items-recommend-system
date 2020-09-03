@@ -25,11 +25,11 @@ public class Main {
             infoType -  头条 1，百科  2
          */
 
-        boolean isEnableCF = true;
+        boolean isEnableCF = false;
         boolean isEnableCB = true;
-        boolean isEnableHR = true;
-        boolean isEnableRR = true;
-        int infoType = 2;
+        boolean isEnableHR = false;
+        boolean isEnableRR = false;
+        int infoType = 1;
 
         logger.info("算法启用状态："
                 + "基于用户的协同过滤 - " + isEnableCF + " | "
@@ -39,12 +39,12 @@ public class Main {
                 + "at " + new Date());
 
         // 为所有用户执行一次推荐
-//        new JobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, infoType).executeInstantJobForAllUsers();
+        new RecommendJobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, infoType).executeInstantJobForAllUsers();
 
         // 为特定用户执行一次推荐
-        List<Long> users = new ArrayList<>();
-        users.add(2L);
-        new RecommendJobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, infoType).executeInstantJobForCertainUsers(users);
+//        List<Long> users = new ArrayList<>();
+//        users.add(2L);
+//        new RecommendJobSetter(isEnableCF, isEnableCB, isEnableHR, isEnableRR, infoType).executeInstantJobForCertainUsers(users);
 
     }
 }

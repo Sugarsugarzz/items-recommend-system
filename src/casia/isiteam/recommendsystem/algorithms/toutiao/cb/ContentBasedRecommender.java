@@ -69,6 +69,8 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
                     // 获取用于在信息项所属模块的用户偏好
                     String moduleName = itemsModuleMap.get(itemID);
                     Map<String, Object> moduleMap = (Map<String, Object>) map.get(moduleName);
+                    if (moduleMap == null)
+                        continue;
                     // 如果用户在该模块下的偏好不为空，计算匹配值
                     if (!moduleMap.isEmpty()) {
                         tempMatchMap.put(itemID, getMatchValue(moduleMap, itemsKeywordsMap.get(itemID)));
