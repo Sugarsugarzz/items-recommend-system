@@ -66,7 +66,7 @@ public class Recommender {
         // 存推荐结果  混排！
         int count = 0;
         for (Long userID : toBeRecommended.keySet()) {
-            logger.info(String.format("正在生成 推荐项 第 %d/%d （UserID：%d）个用户 ...", ++count, toBeRecommended.keySet().size(), userID));
+            logger.info(String.format("正在生成 推荐项 第 %d/%d 个用户（UserID：%d） ...", ++count, toBeRecommended.keySet().size(), userID));
             List<long[]> candidates = new ArrayList<>();
             for (Integer infoType : toBeRecommended.get(userID).keySet()) {
                 RecommendKit.filterBrowsedItems(Recommender.toBeRecommended.get(userID).get(infoType), userID, infoType);
