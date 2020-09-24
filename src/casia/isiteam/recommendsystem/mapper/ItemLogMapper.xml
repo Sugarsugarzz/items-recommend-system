@@ -3,18 +3,13 @@
 
 <mapper namespace="casia.isiteam.recommendsystem.mapper.ItemLogMapper">
 
-    <select id="findAllItemLogs" resultType="casia.isiteam.recommendsystem.model.ItemLog">
-        SELECT user_id, ref_data_id, insert_time
-        FROM user_read_record
-        WHERE info_type = ${infoType}
-    </select>
-
     <select id="findAllHotItems" resultType="casia.isiteam.recommendsystem.model.ItemLog">
         SELECT ref_data_id, COUNT(*) AS visitCount
         FROM user_read_record
         WHERE insert_time > #{startDate} and info_type = ${infoType}
         GROUP BY ref_data_id
         ORDER BY visitCount DESC
+        LIMIT ${recNum}
     </select>
 
     <select id="findBrowsedItemsByUser" resultType="casia.isiteam.recommendsystem.model.ItemLog">
@@ -26,6 +21,6 @@
     <select id="findBrowsedItemsByDate" resultType="casia.isiteam.recommendsystem.model.ItemLog">
         SELECT user_id, ref_data_id
         FROM user_read_record
-        WHERE insert_time > #{startDate} and info_type = ${infoType}
+        WHERE insert_time &gt; #{startDate} and info_type = ${infoType}
     </select>
 </mapper>

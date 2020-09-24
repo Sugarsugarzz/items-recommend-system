@@ -8,8 +8,24 @@
         FROM app_user
     </select>
 
-    <select id="findPrefListByUserIDs" resultType="casia.isiteam.recommendsystem.model.User">
-        SELECT id, pref_list
+    <select id="findPrefListByUserIDsAndInfoType" resultType="casia.isiteam.recommendsystem.model.User">
+        <choose>
+            <when test="infoType == 1">
+                SELECT id, pref_list
+            </when>
+            <when test="infoType == 2">
+                SELECT id, wiki_pref_list
+            </when>
+            <when test="infoType == 3">
+                SELECT id, subject_pref_list
+            </when>
+            <when test="infoType == 4">
+                SELECT id, periodical_pref_list
+            </when>
+            <when test="infoType == 5">
+                SELECT id, report_pref_list
+            </when>
+        </choose>
         FROM app_user
         <where>
             <foreach collection="userIDs" open="id in (" close=")" item="id" separator=",">
@@ -18,38 +34,26 @@
         </where>
     </select>
 
-    <select id="findWikiPrefListByUserIDs" resultType="casia.isiteam.recommendsystem.model.User">
-        SELECT id, wiki_pref_list
-        FROM app_user
-        <where>
-            <foreach collection="userIDs" open="id in (" close=")" item="id" separator=",">
-                ${id}
-            </foreach>
-        </where>
-    </select>
-
-    <update id="updatePrefListByUserID">
+    <update id="updatePrefListByUserIDAndInfoType">
         UPDATE app_user
-        SET pref_list = #{prefList}
+        <choose>
+            <when test="infoType == 1">
+                SET pref_list = #{prefList}
+            </when>
+            <when test="infoType == 2">
+                SET wiki_pref_list = #{prefList}
+            </when>
+            <when test="infoType == 3">
+                SET subject_pref_list = #{prefList}
+            </when>
+            <when test="infoType == 4">
+                SET periodical_pref_list = #{prefList}
+            </when>
+            <when test="infoType == 5">
+                SET report_pref_list = #{prefList}
+            </when>
+        </choose>
         WHERE id = ${userID}
     </update>
-
-    <update id="updateWikiPrefListByUserID">
-        UPDATE app_user
-        SET wiki_pref_list = #{wikiPrefList}
-        WHERE id = ${userID}
-    </update>
-
-    <select id="findAllModuleName" resultType="java.lang.String">
-        SELECT classifyName
-        FROM info_ref_calssify_type
-        WHERE classifyParentId != -1 and info_type = 1
-    </select>
-
-    <select id="findAllWikiModuleName" resultType="java.lang.String">
-        SELECT classifyName
-        FROM info_ref_calssify_type
-        WHERE classifyParentId = -1 and info_type = 2
-    </select>
 
 </mapper>

@@ -10,16 +10,9 @@ public interface UserMapper {
 
     List<User> findAllUsers();
 
-    List<User> findPrefListByUserIDs(@Param("userIDs") Collection<Long> userIDs);
+    List<User> findPrefListByUserIDsAndInfoType(@Param("userIDs") Collection<Long> userIDs, @Param("infoType") int infoType);
 
-    void updatePrefListByUserID(@Param("prefList") String prefList, @Param("userID") Long userID);
+    void updatePrefListByUserIDAndInfoType(@Param("prefList") String prefList, @Param("userID") Long userID, @Param("infoType") int infoType);
 
-    List<String> findAllModuleName();
-
-    List<User> findWikiPrefListByUserIDs(@Param("userIDs") Collection<Long> userIDs);
-
-    void updateWikiPrefListByUserID(@Param("wikiPrefList") String wikiPrefList, @Param("userID") Long userID);
-
-    List<String> findAllWikiModuleName();
 
 }

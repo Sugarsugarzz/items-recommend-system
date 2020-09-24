@@ -1,9 +1,10 @@
 ### 1. 版本历史	
 
-| 修订日期   | 版本号 | 修订人 | 备注                         |
-| ---------- | ------ | ------ | ---------------------------- |
-| 2020.08.31 | 1.0    | 唐     |                              |
-| 2020.09.02 | 1.1    | 唐     | 补充算法介绍及数据库修改前提 |
+| 修订日期   | 版本号 | 修订人 | 备注                                         |
+| ---------- | ------ | ------ | -------------------------------------------- |
+| 2020.08.31 | 1.0    | 唐     |                                              |
+| 2020.09.02 | 1.1    | 唐     | 补充算法介绍及数据库修改前提                 |
+| 2020.09.24 | 1.2    | 唐     | 补充对专题、期刊和报告的支持，简化调用方式。 |
 
 ### 2. 调用说明
 
@@ -13,79 +14,73 @@
 
 - 数据库修改前提
 
-  - **app_user** 表增加 **pref_list**（text） 和 **wiki_pref_list**（text） 字段，存储用户偏好。
+  - **app_user** 表增加 **pref_list**（text） 、 **wiki_pref_list**（text）、**subject_pref_list**（text）、**periodical_pref_list**（text）、**report_pref_list**（text） 字段，存储用户偏好。
 
-  - **user_read_record** 表给 **user_id** 和 **ref_data_id** 分别增加普通索引。
+  - **user_read_record** 表给 **user_id** 和 **ref_data_id** 增加普通索引。
 
   - 添加 **recommendations** 表，存放推荐结果。
 
     ```sql
     DROP TABLE IF EXISTS `recommendations`;
     CREATE TABLE `recommendations` (
-      `id` int(20) NOT NULL AUTO_INCREMENT,
-      `user_id` int(12) NOT NULL COMMENT '用户ID',
-      `item_id` int(12) NOT NULL COMMENT '推荐项ID，对应 ref_data_id',
+      `id` int NOT NULL AUTO_INCREMENT,
+      `user_id` int NOT NULL COMMENT '用户ID',
+      `item_id` int NOT NULL COMMENT '推荐项ID',
+      `info_type` int NOT NULL COMMENT '信息类型 1头条 2百科 3专题 4期刊 5报告',
       `derive_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '生成时间',
-      `derive_algorithm` int(3) NOT NULL COMMENT '生成推荐算法',
-      `info_type` int(11) NOT NULL COMMENT '信息类型 1头条 2 百科',
-      PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `unique_key` (`user_id`,`item_id`,`info_type`) USING BTREE
+    ) ENGINE=InnoDB AUTO_INCREMENT=8524 DEFAULT CHARSET=utf8 COMMENT='推荐结果表';
     ```
+    
+  - 添加 **recommendations_default** 表，存放默认推荐结果，供新注册的账号使用。（没有用户ID字段）
 
-- 调用类方法
-
-  1. 为所有用户执行一次推荐
-
-  ```java
-  new RecommendJobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR, boolean isEnableRR, int infoType).executeInstanceJobForAllUsers();
-  ```
-
-  2. 为特定用户执行一次推荐
-
-  ```java
-  new RecommendJobSetter(boolean isEnableCF, boolean isEnableCB, boolean isEnableHR, boolean isEnableRR, int infoType).executeInstanceJobForCertainUsers(List<Long> userIDs);
-  ```
+    ```sql
+    DROP TABLE IF EXISTS `recommendations_default`;
+    CREATE TABLE `recommendations_default` (
+      `id` int NOT NULL AUTO_INCREMENT,
+      `item_id` int NOT NULL COMMENT '推荐项ID',
+      `info_type` int NOT NULL COMMENT '信息类型 1头条 2百科 3专题 4期刊 5报告',
+      `derive_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '生成时间',
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `unique_key` (`item_id`,`info_type`) USING BTREE
+    ) ENGINE=InnoDB AUTO_INCREMENT=4222 DEFAULT CHARSET=utf8 COMMENT='默认推荐结果表';
+    ```
 
 - 参数说明
 
-  | 参数名     | 参数类型         | 说明                     |
-  | ---------- | ---------------- | ------------------------ |
-  | isEnableCF | boolean          | 是否启用协同过滤算法推荐 |
-  | isEnableCB | boolean          | 是否启用基于内容算法推荐 |
-  | isEnableHR | boolean          | 是否启用热点推荐         |
-  | isEnableRR | boolean          | 是否启用随机推荐         |
-  | infoType   | int              | 头条 1，百科 2           |
-  | userIDs    | List&lt;Long&gt; | 特定用户的ID列表         |
-
+  | 参数名  | 参数类型         | 说明             |
+  | ------- | ---------------- | ---------------- |
+  | userIDs | List&lt;Long&gt; | 特定用户的ID列表 |
+  
 - 调用示例
 
   1. 为所有用户执行一次推荐
   
   ```java
-  new RecommendJobSetter(true, true, true, true, 1).executeInstantJobForAllUsers();
+  new Recommender().executeInstantJobForAllUsers();
   ```
   
   2. 为特定用户执行一次推荐
   
   ```java
-  List<Long> users = new ArrayList();
+  List<Long> users = new ArrayList<>();
   users.add(1L);
-  users.add(2L);
-  new RecommendJobSetter(true, true, true, true, 1).executeInstantJobForAllUsers(users);
+  users.add(4L);
+  new Recommender().executeInstantJobForCertainUsers(users);
   ```
   
 - 使用说明
 
-  建议定时每日0点更新一次。
+  建议每日定时调用一次。
 
+### 3. 推荐结果说明
 
-### 3. 推荐结果
+​	推荐结果采用**混排**的方式。
 
-​	推荐结果将存在 **recommendations** 表中，由 **derive_algorithm** 字段标注其是由哪一个推荐算法生成的，**info_type** 标注其属于百科还是头条。
+​	推荐结果将存在 **recommendations** 表中，由 **info_type字段** 标注其所属的信息类型，**user_id字段** 标注其所属用户。
 
-​	建议取时效性内（**derive_time**字段判断），**derive_algorithm** 字段数值由小到大取结果，推给用户。
-
-​	**derive_algorithm** 数值越小，推荐项与用户的偏好越匹配。
+​	默认推荐结果（由热点推荐和随机推荐构成）存在 **recommendations_default** 表中，由 **info_type字段** 标注其所属的信息类型，无 user_id 字段，不区分用户，新注册的用户可直接从这个表里取推荐项。
 
 ### 4. 使用算法介绍
 

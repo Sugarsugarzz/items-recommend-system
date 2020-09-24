@@ -8,16 +8,9 @@ import java.util.List;
 
 public interface ItemMapper {
 
-    List<Item> findItemsByIDs(@Param("itemIDs") Collection<Long> itemIDs);
+    List<Item> findItemsByInfoType(@Param("infoType") int infoType);
 
-    List<Item> findItemsByPublishTime(@Param("startDate") String startDate);
+    List<Item> findItemsByIDsAndInfoType(@Param("itemIDs") Collection<Long> itemIDs, @Param("infoType") int infoType);
 
-    List<Item> findGroupItemsByPublishTime(@Param("startDate") String startDate);
-
-    List<Item> findWikiItemsByIDs(@Param("itemIDs") Collection<Long> itemIDs);
-
-    List<Item> findWikiItemsByPublishTime(@Param("startDate") String startDate);
-
-    List<Item> findGroupWikiItemsByPublishTime(@Param("startDate") String startDate);
-
+    List<Item> findRandomItemsByInfoType(@Param("infoType") int infoType, @Param("recNum") int recNum);
 }

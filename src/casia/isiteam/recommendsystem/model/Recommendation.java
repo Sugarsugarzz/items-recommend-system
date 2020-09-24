@@ -15,7 +15,7 @@ public class Recommendation {
     private String derive_time;
     // 生成所用推荐算法
     private int derive_algorithm;
-    // 信息类型 1头条 2 百科
+    // 信息类型
     private int info_type;
 
     public Recommendation() {

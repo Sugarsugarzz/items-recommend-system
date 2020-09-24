@@ -7,37 +7,31 @@ public class Item {
 
     // 信息项id
     private long id;
-    // wiki项id
+    private long auto_id;
     private long wiki_info_id;
-    // wiki项名
+    // 名
+    private String infoTitle;
     private String name;
-    // 摘要
-    private String infoDesc;
-    // wiki摘要
-    private String summary;
+    private String subjectName;
+    private String perName;
+    private String reportName;
     // 发布时间
     private String publishTime;
-    // 标题
-    private String infoTitle;
-    // 所属大模块名
-    private String classifyName;
-    // 所属子模块名
-    private String classifySubName;
 
 
     public Item() {
     }
 
-    public Item(long id, long wiki_info_id, String name, String infoDesc, String summary, String publishTime, String infoTitle, String classifyName, String classifySubName) {
+    public Item(long id, long auto_id, long wiki_info_id, String infoTitle, String name, String subjectName, String perName, String reportName, String publishTime) {
         this.id = id;
+        this.auto_id = auto_id;
         this.wiki_info_id = wiki_info_id;
-        this.name = name;
-        this.infoDesc = infoDesc;
-        this.summary = summary;
-        this.publishTime = publishTime;
         this.infoTitle = infoTitle;
-        this.classifyName = classifyName;
-        this.classifySubName = classifySubName;
+        this.name = name;
+        this.subjectName = subjectName;
+        this.perName = perName;
+        this.reportName = reportName;
+        this.publishTime = publishTime;
     }
 
     public long getId() {
@@ -48,44 +42,20 @@ public class Item {
         this.id = id;
     }
 
+    public long getAuto_id() {
+        return auto_id;
+    }
+
+    public void setAuto_id(long auto_id) {
+        this.auto_id = auto_id;
+    }
+
     public long getWiki_info_id() {
         return wiki_info_id;
     }
 
     public void setWiki_info_id(long wiki_info_id) {
         this.wiki_info_id = wiki_info_id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getInfoDesc() {
-        return infoDesc;
-    }
-
-    public void setInfoDesc(String infoDesc) {
-        this.infoDesc = infoDesc;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public String getPublishTime() {
-        return publishTime;
-    }
-
-    public void setPublishTime(String publishTime) {
-        this.publishTime = publishTime;
     }
 
     public String getInfoTitle() {
@@ -96,34 +66,58 @@ public class Item {
         this.infoTitle = infoTitle;
     }
 
-    public String getClassifyName() {
-        return classifyName;
+    public String getName() {
+        return name;
     }
 
-    public void setClassifyName(String classifyName) {
-        this.classifyName = classifyName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getClassifySubName() {
-        return classifySubName;
+    public String getSubjectName() {
+        return subjectName;
     }
 
-    public void setClassifySubName(String classifySubName) {
-        this.classifySubName = classifySubName;
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+    public String getPerName() {
+        return perName;
+    }
+
+    public void setPerName(String perName) {
+        this.perName = perName;
+    }
+
+    public String getReportName() {
+        return reportName;
+    }
+
+    public void setReportName(String reportName) {
+        this.reportName = reportName;
+    }
+
+    public String getPublishTime() {
+        return publishTime;
+    }
+
+    public void setPublishTime(String publishTime) {
+        this.publishTime = publishTime;
     }
 
     @Override
     public String toString() {
         return "Item{" +
                 "id=" + id +
+                ", auto_id=" + auto_id +
                 ", wiki_info_id=" + wiki_info_id +
-                ", name='" + name + '\'' +
-                ", infoDesc='" + infoDesc + '\'' +
-                ", summary='" + summary + '\'' +
-                ", publishTime='" + publishTime + '\'' +
                 ", infoTitle='" + infoTitle + '\'' +
-                ", classifyName='" + classifyName + '\'' +
-                ", classifySubName='" + classifySubName + '\'' +
+                ", name='" + name + '\'' +
+                ", subjectName='" + subjectName + '\'' +
+                ", perName='" + perName + '\'' +
+                ", reportName='" + reportName + '\'' +
+                ", publishTime='" + publishTime + '\'' +
                 '}';
     }
 }

@@ -39,7 +39,7 @@ public class DBKit {
         try {
             inputStream = new FileInputStream(new File(System.getProperty("user.dir") + "/recommend_config/mybatis-config.xml"));
         } catch (Exception e) {
-            inputStream = ConfigKit.class.getClassLoader().getResourceAsStream("recommend_config/mybatis-config.xml");
+            inputStream = ConfigKit.class.getClassLoader().getResourceAsStream("mybatis-config.xml");
         }
 
         SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
@@ -50,14 +50,6 @@ public class DBKit {
         itemMapper = sqlSession.getMapper(ItemMapper.class);
         itemLogMapper = sqlSession.getMapper(ItemLogMapper.class);
         recommendationMapper = sqlSession.getMapper(RecommendationMapper.class);
-    }
-
-    /**
-     * 获取所有 User
-     * @return User列表
-     */
-    public static List<User> getAllUsers() {
-        return userMapper.findAllUsers();
     }
 
     /**
@@ -78,17 +70,8 @@ public class DBKit {
      * @param userIDs 用户ID列表
      * @return User对象列表
      */
-    public static List<User> getUserPrefList(Collection<Long> userIDs) {
-        return userMapper.findPrefListByUserIDs(userIDs);
-    }
-
-    /**
-     * 根据用户ID列表，获取用户的wiki偏好
-     * @param userIDs 用户ID列表
-     * @return User对象列表
-     */
-    public static List<User> getUserWikiPrefList(Collection<Long> userIDs) {
-        return userMapper.findWikiPrefListByUserIDs(userIDs);
+    public static List<User> getUserPrefList(Collection<Long> userIDs, int infoType) {
+        return userMapper.findPrefListByUserIDsAndInfoType(userIDs, infoType);
     }
 
     /**
@@ -96,93 +79,37 @@ public class DBKit {
      * @param prefList 新的偏好列表
      * @param userID 用户ID
      */
-    public static void updateUserPrefList(String prefList, Long userID) {
-        userMapper.updatePrefListByUserID(prefList, userID);
+    public static void updateUserPrefList(String prefList, Long userID, int infoType) {
+        userMapper.updatePrefListByUserIDAndInfoType(prefList, userID, infoType);
         sqlSession.commit();
     }
 
     /**
-     * 根据用ID，更新用户的wiki偏好
-     * @param wikiPrefList 新的偏好列表
-     * @param userID 用户ID
+     * 获取所有 Items
+     * @param infoType 类型ID
      */
-    public static void updateUserWikiPrefList(String wikiPrefList, Long userID) {
-        userMapper.updateWikiPrefListByUserID(wikiPrefList, userID);
-        sqlSession.commit();
+    public static List<Item> getItems(int infoType) {
+        return itemMapper.findItemsByInfoType(infoType);
     }
 
     /**
-     * 根据信息项ID，获取 Items
+     * 根据 ID 获取 Items
      * @param itemIDs 信息项ID列表
-     * @return Item对象列表
+     * @return Item列表
      */
-    public static List<Item> getItemsByIDs(Collection<Long> itemIDs) {
-        return itemMapper.findItemsByIDs(itemIDs);
-    }
-
-    /**
-     * 根据wiki项ID，获取 Items
-     * @param itemIDs wiki项ID列表
-     * @return Item对象列表
-     */
-    public static List<Item> getWikiItemsByIDs(Collection<Long> itemIDs) {
-        return itemMapper.findWikiItemsByIDs(itemIDs);
-    }
-
-    /**
-     * 根据起始发布日期，获取 Items
-     * @param startDate 起始日期
-     * @return Items列表
-     */
-    public static List<Item> getItemsByPublishTime(String startDate) {
-        return itemMapper.findItemsByPublishTime(startDate);
-    }
-
-    /**
-     * 根据起始发布日期，获取 WikiItems
-     * @param startDate 起始日期
-     * @return WikiItems列表
-     */
-    public static List<Item> getWikiItemsByPublishTime(String startDate) {
-        return itemMapper.findWikiItemsByPublishTime(startDate);
-    }
-
-    /**
-     * 根据有效起始日期，从各领域抽取一些 Items
-     * @param startDate 有效起始日期
-     * @return Items列表
-     */
-    public static List<Item> getGroupItemsByPublishTime(String startDate) {
-        return itemMapper.findGroupItemsByPublishTime(startDate);
-    }
-
-    /**
-     * 根据有效起始日期，从 wiki_info表 分组随机抽取一些 Items
-     * @param startDate 有效起始日期
-     * @return Items列表
-     */
-    public static List<Item> getGroupWikiItemsByPublishTime(String startDate) {
-        return itemMapper.findGroupWikiItemsByPublishTime(startDate);
-    }
-
-    /**
-     * 获取所有 ItemLog（浏览历史）
-     * @param infoType 头条 or 百科
-     * @return ItemLog列表
-     */
-    public static List<ItemLog> getAllItemLogs(int infoType) {
-        return itemLogMapper.findAllItemLogs(infoType);
+    public static List<Item> getItemsByIDs(Collection<Long> itemIDs, int infoType) {
+        return itemMapper.findItemsByIDsAndInfoType(itemIDs, infoType);
     }
 
     /**
      * 获取时效性的 信息项ID
      * @param startDate 有效起始日期
-     * @param infoType 头条 or 百科
+     * @param infoType 类型
      * @return 信息项ID列表
      */
-    public static List<Long> getHotItemIDs(String startDate, int infoType) {
+    public static List<Long> getHotItemIDs(String startDate, int infoType, int recNum) {
         List<Long> hotItemIDs = new ArrayList<>();
-        List<ItemLog> itemLogs = itemLogMapper.findAllHotItems(startDate, infoType);
+        List<ItemLog> itemLogs = itemLogMapper.findAllHotItems(startDate, infoType, recNum);
         for (ItemLog itemLog : itemLogs) {
             hotItemIDs.add(itemLog.getRef_data_id());
         }
@@ -190,9 +117,23 @@ public class DBKit {
     }
 
     /**
+     * 随机取一些 Items
+     * @param infoType 类型
+     * @return Items ID列表
+     */
+    public static List<Long> getRandomItemsByInfoType(int infoType, int recNum) {
+        List<Long> randomItemIDs = new ArrayList<>();
+        List<Item> items = itemMapper.findRandomItemsByInfoType(infoType, recNum);
+        for (Item item : items) {
+            randomItemIDs.add(RecommendKit.getItemId(item, infoType));
+        }
+        return randomItemIDs;
+    }
+
+    /**
      * 根据用户ID，获取用户浏览记录
      * @param userID 用户ID
-     * @param infoType 头条 or 百科
+     * @param infoType 类型
      * @return ItemLogs
      */
     public static List<ItemLog> getUserBrowsedItems(Long userID, int infoType) {
@@ -200,25 +141,13 @@ public class DBKit {
     }
 
     /**
-     * 获取今日所有用户的浏览记录
-     * @param startDate 今日日期
-     * @param infoType 头条 or 百科
+     * 获取当日所有用户的浏览记录
+     * @param startDate 日期
+     * @param infoType 类型
      * @return ItemLogs
      */
     public static List<ItemLog> getBrowsedItemsByDate(String startDate, int infoType) {
         return itemLogMapper.findBrowsedItemsByDate(startDate, infoType);
-    }
-
-    /**
-     * 获取所有模块名
-     * @return ModuleNames
-     */
-    public static List<String> getAllModuleNames() {
-        return userMapper.findAllModuleName();
-    }
-
-    public static List<String> getAllWikiModuleNames() {
-        return userMapper.findAllWikiModuleName();
     }
 
     /**
@@ -235,29 +164,42 @@ public class DBKit {
     /**
      * 获取对用户的推荐记录
      * @param userID 用户ID
-     * @param date 时效性起始日期
      * @param infoType 头条 or 百科
      * @return 推荐记录
      */
-    public static List<Recommendation> getUserRecommendedItems(Long userID, String date, int infoType) {
-        return recommendationMapper.findRecommendedItemsByUser(userID, date, infoType);
+    public static List<Recommendation> getUserRecommendedItems(Long userID, int infoType) {
+        return recommendationMapper.findRecommendedItemsByUser(userID, infoType);
     }
 
     /**
      * 将推荐结果存入 recommendations 表
      * @param userID 用户ID
-     * @param recommendItemID 推荐信息项ID
-     * @param algorithm_type 推荐算法类型
-     * @param infoType 头条 or 百科
      */
-    public static void saveRecommendation(Long userID, Long recommendItemID, int algorithm_type, int infoType) {
+    public static void saveRecommendation(Long userID, List<long[]> candidates) {
+        for (long[] candidate : candidates) {
+            recommendationMapper.saveRecommendation(userID, candidate[0], candidate[1]);
+        }
+        sqlSession.commit();
+    }
 
-        Recommendation obj = new Recommendation();
-        obj.setUser_id(userID);
-        obj.setItem_id(recommendItemID);
-        obj.setDerive_algorithm(algorithm_type);
-        obj.setInfo_type(infoType);
-        recommendationMapper.saveRecommendation(obj);
+    public static void saveDefaultRecommendation(List<long[]> candidates)  {
+        for (long[] candidate : candidates) {
+            recommendationMapper.saveDefaultRecommendation(candidate[0], candidate[1]);
+        }
+        sqlSession.commit();
+    }
+
+    /**
+     * 清除时效外的推荐项
+     * @param date 起始日期
+     */
+    public static void deleteRecommendationByDate(String date) {
+        recommendationMapper.deleteRecommendationByDate(date);
+        sqlSession.commit();
+    }
+
+    public static void deleteDefaultRecommendationByDate(String date) {
+        recommendationMapper.deleteDefaultRecommendationByDate(date);
         sqlSession.commit();
     }
 }

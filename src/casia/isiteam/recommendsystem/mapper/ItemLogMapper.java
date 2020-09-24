@@ -7,9 +7,7 @@ import java.util.List;
 
 public interface ItemLogMapper {
 
-    List<ItemLog> findAllItemLogs(@Param("infoType") int infoType);
-
-    List<ItemLog> findAllHotItems(@Param("startDate") String startDate, @Param("infoType") int infoType);
+    List<ItemLog> findAllHotItems(@Param("startDate") String startDate, @Param("infoType") int infoType, @Param("recNum") int recNum);
 
     List<ItemLog> findBrowsedItemsByUser(@Param("userID") Long userID, @Param("infoType") int infoType);
 

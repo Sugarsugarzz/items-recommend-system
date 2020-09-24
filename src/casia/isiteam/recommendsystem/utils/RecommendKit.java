@@ -1,9 +1,10 @@
 package casia.isiteam.recommendsystem.utils;
 
+import casia.isiteam.recommendsystem.main.Recommender;
+import casia.isiteam.recommendsystem.model.Item;
 import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
 import casia.isiteam.recommendsystem.model.User;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,78 +61,71 @@ public class RecommendKit {
     }
 
     /**
-     * 在当日基础上增加/减少天数后的日期时间戳，便于推荐算法在比较时间前后时调用
-     * @param beforeDays 增加/减少的天数
-     * @return 日期时间戳
-     */
-    public static Timestamp getInRecTimestamp(int beforeDays) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, beforeDays);
-        return new Timestamp(calendar.getTime().getTime());
-    }
-
-    /**
-     * 用户偏好为 null，根据模块名补充默认偏好
-     * @param infoType 头条 or 百科
-     */
-    public static JSONObject getDefaultPrefList(int infoType) {
-
-        List<String> moduleNames;
-        if (infoType == 1) {
-            moduleNames= DBKit.getAllModuleNames();
-        } else {
-            moduleNames= DBKit.getAllWikiModuleNames();
-        }
-
-        JSONObject jsonObject = new JSONObject();
-        for (String name : moduleNames) {
-            jsonObject.put(name, new JSONObject());
-        }
-        jsonObject.put("其他", new JSONObject());
-
-        return jsonObject;
-    }
-
-    /**
      * 获取 用户与偏好列表 的键值对
      * @param userIDs 用户ID列表
+     * @param infoType 类型
      */
-    public static Map<Long, String> getUserPreListMap(Collection<Long> userIDs) {
+    public static Map<Long, String> getUserPreListMap(Collection<Long> userIDs, int infoType) {
         Map<Long, String> map = new HashMap<>();
-        List<User> users = DBKit.getUserPrefList(userIDs);
+        List<User> users = DBKit.getUserPrefList(userIDs, infoType);
         for (User user : users) {
-            map.put(user.getId(), user.getPref_list());
+            map.put(user.getId(), RecommendKit.getPrefList(user, infoType));
         }
         return map;
     }
 
     /**
-     * 获取 用户与wiki偏好 的键值对
-     * @param userIDs 用户ID列表
+     * 根据 infoType 获取 user 的偏好
      */
-    public static Map<Long, String> getUserWikiPreListMap(Collection<Long> userIDs) {
-        Map<Long, String> map = new HashMap<>();
-        List<User> users = DBKit.getUserWikiPrefList(userIDs);
-        for (User user : users) {
-            map.put(user.getId(), user.getWiki_pref_list());
+    public static String getPrefList(User user, int infoType) {
+        switch (infoType) {
+            case 1:  return user.getPref_list();
+            case 2:  return user.getWiki_pref_list();
+            case 3:  return user.getSubject_pref_list();
+            case 4:  return user.getPeriodical_pref_list();
+            case 5:  return user.getReport_pref_list();
+            default:  return "";
         }
-        return map;
+    }
+
+    /**
+     * 根据 infoType 获取 item 的 id
+     */
+    public static Long getItemId(Item item, int infoType) {
+        switch (infoType) {
+            case 1:
+            case 4:
+            case 5:  return item.getId();
+            case 2:  return item.getWiki_info_id();
+            case 3:  return item.getAuto_id();
+            default:  return 0L;
+        }
+    }
+
+    /**
+     * 根据 infoType 获取 item 的 name
+     */
+    public static String getItemName(Item item, int infoType) {
+        switch (infoType) {
+            case 1:  return item.getInfoTitle();
+            case 2:  return item.getName();
+            case 3:  return item.getSubjectName();
+            case 4:  return item.getPerName();
+            case 5:  return item.getReportName();
+            default:  return "";
+        }
     }
 
     /**
      * 过滤用户已经看过的信息项
      * @param recItemList 信息项推荐列表
      * @param userID 用户ID
-     * @param infoType 头条 or 百科
+     * @param infoType 类型
      */
     public static void filterBrowsedItems(Collection<Long> recItemList, Long userID, int infoType) {
-
-        if (recItemList.size() == 0)
-            return;
-
+        if (recItemList.size() == 0)  return;
         List<ItemLog> userBrowsedItems = DBKit.getUserBrowsedItems(userID, infoType);
         for (ItemLog itemLog : userBrowsedItems) {
-//            System.out.println("用户浏览过的信息项id - " + itemLog.getRef_data_id());
             recItemList.remove(itemLog.getRef_data_id());
         }
     }
@@ -140,16 +134,12 @@ public class RecommendKit {
      * 过滤已向用户推荐过的信息项
      * @param recItemList 信息项推荐列表
      * @param userID 用户ID
-     * @param infoType 头条 or 百科
+     * @param infoType 类型
      */
     public static void filterRecommendedItems(Collection<Long> recItemList, Long userID, int infoType) {
-
-        if (recItemList.size() == 0)
-            return;
-
-        List<Recommendation> userRecommendedItems = DBKit.getUserRecommendedItems(userID, getInRecDate(), infoType);
+        if (recItemList.size() == 0)  return;
+        List<Recommendation> userRecommendedItems = DBKit.getUserRecommendedItems(userID, infoType);
         for (Recommendation recommendation : userRecommendedItems) {
-//            System.out.println("已向用户推荐过的信息项id - " + recommendation.getItem_id());
             recItemList.remove(recommendation.getItem_id());
         }
     }
@@ -161,9 +151,7 @@ public class RecommendKit {
      */
     public static void removeOverSizeItems(Collection<Long> toBeRecommended, int recNum) {
 
-        if (toBeRecommended.size() <= recNum)
-            return;
-
+        if (toBeRecommended.size() <= recNum)  return;
         int i = 0;
         Iterator<Long> iterator = toBeRecommended.iterator();
         while (iterator.hasNext()) {
@@ -176,17 +164,10 @@ public class RecommendKit {
     }
 
     /**
-     * 将推荐结果存入 recommendations 表
-     * @param userID 用户ID
-     * @param recommendItemIDs 待存入的推荐信息项ID列表
-     * @param algorithm_type 标注推荐结果来自哪个推荐算法
-     * @param infoType 头条 or 百科
+     * 初始化 toBeRecommended
      */
-    public static void insertRecommendations(Long userID, Collection<Long> recommendItemIDs, int algorithm_type, int infoType) {
-
-        for (Long recommendItemID : recommendItemIDs) {
-//            System.out.println("本次向用户推荐的信息项id - " + recommendItemID);
-            DBKit.saveRecommendation(userID, recommendItemID, algorithm_type, infoType);
-        }
+    public static void initToBeRecommended(Long userID, int infoType) {
+        Recommender.toBeRecommended.computeIfAbsent(userID, k -> new HashMap<>());
+        Recommender.toBeRecommended.get(userID).computeIfAbsent(infoType, k -> new HashSet<>());
     }
 }

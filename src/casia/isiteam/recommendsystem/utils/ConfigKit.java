@@ -22,7 +22,7 @@ public class ConfigKit {
             try {
                 inputStream = new FileInputStream(new File(System.getProperty("user.dir") + "/recommend_config/config.properties"));
             } catch (Exception e) {
-                inputStream = ConfigKit.class.getClassLoader().getResourceAsStream("recommend_config/config.properties");
+                inputStream = ConfigKit.class.getClassLoader().getResourceAsStream("config.properties");
             }
             configKit.load(inputStream);
         } catch (FileNotFoundException e) {
