@@ -5,8 +5,8 @@
     
     <settings>
         <!--    日志   -->
-        <setting name="logImpl" value="STDOUT_LOGGING"/>
-<!--        <setting name="logImpl" value="LOG4J"/>-->
+<!--        <setting name="logImpl" value="STDOUT_LOGGING"/>-->
+        <setting name="logImpl" value="LOG4J"/>
         <!--    开启延迟加载    -->
 <!--        <setting name="lazyLoadingEnabled" value="true"/>-->
         <!--    开启二级缓存    -->
