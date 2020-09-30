@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD com.isitem.recommendsystem.mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="casia.isiteam.recommendsystem.mapper.ItemLogMapper">
+
+    <select id="findBrowsedItemsByUser" resultType="casia.isiteam.recommendsystem.model.ItemLog">
+        SELECT ref_data_id
+        FROM user_read_record
+        WHERE user_id = ${userID} and info_type = ${infoType}
+    </select>
+
+    <select id="findBrowsedItemsByDate" resultType="casia.isiteam.recommendsystem.model.ItemLog">
+        SELECT user_id, ref_data_id
+        FROM user_read_record
+        WHERE insert_time &gt; #{startDate} and info_type = ${infoType}
+    </select>
+</mapper>
