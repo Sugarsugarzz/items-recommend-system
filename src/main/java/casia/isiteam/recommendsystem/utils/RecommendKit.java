@@ -70,9 +70,9 @@ public class RecommendKit {
     public static Map<Long, String> getUserPreListMap(Collection<Long> userIDs, int infoType) {
         Map<Long, String> map = new HashMap<>();
         List<User> users = DBKit.getUserPrefList(userIDs, infoType);
-        for (User user : users) {
-            map.put(user.getId(), RecommendKit.getPrefList(user, infoType));
-        }
+        users.forEach(user ->
+            map.put(user.getId(), RecommendKit.getPrefList(user, infoType))
+        );
         return map;
     }
 
@@ -127,9 +127,9 @@ public class RecommendKit {
     public static void filterBrowsedItems(Collection<Long> recItemList, Long userID, int infoType) {
         if (recItemList.size() == 0)  return;
         List<ItemLog> userBrowsedItems = DBKit.getUserBrowsedItems(userID, infoType);
-        for (ItemLog itemLog : userBrowsedItems) {
-            recItemList.remove(itemLog.getRef_data_id());
-        }
+        userBrowsedItems.forEach(itemLog ->
+            recItemList.remove(itemLog.getRef_data_id())
+        );
     }
     /**
      * 去除推荐结果中超出数量限制的部分

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ContentBasedRecommender implements RecommendAlgorithm {
 
@@ -62,7 +63,9 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
                 RecommendKit.initToBeRecommended(userID, infoType);
                 // 处理
                 removeLowMatchItem(tempMatchMap);
-                Recommender.toBeRecommended.get(userID).get(infoType).addAll(tempMatchMap.keySet());
+                List<Map.Entry<Long, Double>> list = new ArrayList<>(tempMatchMap.entrySet());
+                list.sort((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
+                Recommender.toBeRecommended.get(userID).get(infoType).addAll(list.stream().map(Map.Entry::getKey).limit(recNum).collect(Collectors.toList()));
             }
 
         } catch (Exception e) {

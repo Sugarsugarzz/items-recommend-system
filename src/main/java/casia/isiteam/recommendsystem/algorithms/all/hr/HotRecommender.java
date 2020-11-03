@@ -25,10 +25,9 @@ public class HotRecommender implements RecommendAlgorithm {
             // 初始化
             RecommendKit.initToBeRecommended(userID, infoType);
             // 添加生成的推荐词条项
-            int i = Math.min(Rec_Num, hotItemsMap.get(infoType).size());
-            while (i-- > 0) {
-                Recommender.toBeRecommended.get(userID).get(infoType).add(hotItemsMap.get(infoType).get(i));
-            }
+            hotItemsMap.get(infoType).forEach(itemID ->
+                Recommender.toBeRecommended.get(userID).get(infoType).add(itemID)
+            );
         }
         logger.info("信息类型：" + infoType + "  基于热点推荐 结束于 " + new Date());
     }
@@ -40,12 +39,12 @@ public class HotRecommender implements RecommendAlgorithm {
         for (Integer infoType : Recommender.infoTypes) {
             // 生成热点项
             hotItemsMap.put(infoType, new ArrayList<>());
-            List<Long> hotItemIDs = DBKit.getHotItemIDs(RecommendKit.getInRecDate(beforeDays), infoType);
+            List<Long> hotItemIDs = DBKit.getHotItemIDs(RecommendKit.getInRecDate(beforeDays), infoType, Rec_Num);
             hotItemsMap.get(infoType).addAll(hotItemIDs);
             // 添加到默认推荐项
-            for (Long itemID : hotItemIDs) {
-                Recommender.defaultCandidates.add(new long[] {itemID, infoType});
-            }
+            hotItemIDs.forEach(itemID ->
+                Recommender.defaultCandidates.add(new long[] {itemID, infoType})
+            );
         }
         logger.info("生成 热点项 完毕！");
     }

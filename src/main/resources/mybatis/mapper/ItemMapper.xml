@@ -21,8 +21,6 @@
                 SELECT auto_id FROM subject_info
             </when>
         </choose>
-        ORDER BY RAND()
-        LIMIT ${recNum}
     </select>
 
     <select id="findItemsByIDsAndInfoType" resultType="casia.isiteam.recommendsystem.model.Item">

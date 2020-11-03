@@ -24,10 +24,9 @@ public class RandomRecommender implements RecommendAlgorithm {
             // 初始化
             RecommendKit.initToBeRecommended(userID, infoType);
             // 添加生成的推荐词条项
-            int i = randomItemsMap.get(infoType).size();
-            while (i-- > 0) {
-                Recommender.toBeRecommended.get(userID).get(infoType).add(randomItemsMap.get(infoType).get(i));
-            }
+            randomItemsMap.get(infoType).forEach(itemID ->
+                Recommender.toBeRecommended.get(userID).get(infoType).add(itemID)
+            );
         }
         logger.info("信息类型：" + infoType + "  基于随机推荐 结束于 " + new Date());
     }
@@ -42,9 +41,9 @@ public class RandomRecommender implements RecommendAlgorithm {
             List<Long> randomItemIDs = DBKit.getRandomItemsByInfoType(infoType, Rec_Num);
             randomItemsMap.get(infoType).addAll(randomItemIDs);
             // 添加到默认推荐项
-            for (Long itemID : randomItemIDs) {
-                Recommender.defaultCandidates.add(new long[] {itemID, infoType});
-            }
+            randomItemIDs.forEach(itemID ->
+                Recommender.defaultCandidates.add(new long[] {itemID, infoType})
+            );
         }
         logger.info("生成 随机项 完毕！");
     }

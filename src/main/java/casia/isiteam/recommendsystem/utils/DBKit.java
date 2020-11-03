@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 数据库操作工具
@@ -60,12 +61,8 @@ public class DBKit {
      * @return UserID列表
      */
     public static List<Long> getAllUserIDs() {
-        List<Long> userIDs = new ArrayList<>();
         List<User> users = userMapper.findAllUsers();
-        for (User user : users) {
-            userIDs.add(user.getId());
-        }
-        return userIDs;
+        return users.stream().map(User::getId).collect(Collectors.toList());
     }
 
     /**
@@ -109,26 +106,23 @@ public class DBKit {
      * @param infoType 类型
      * @return 信息项ID列表
      */
-    public static List<Long> getHotItemIDs(String startDate, int infoType) {
-        List<Long> hotItemIDs = new ArrayList<>();
+    public static List<Long> getHotItemIDs(String startDate, int infoType, int recNum) {
+
         List<ItemLog> itemLogs = itemLogMapper.findBrowsedItemsByDate(startDate, infoType);
-        // 根据浏览次数排序生成Map
+        // 根据浏览次数生成Map
         Map<Long, Integer> countMap = new HashMap<>();
-        for (ItemLog itemLog : itemLogs) {
+        itemLogs.forEach(itemLog -> {
             if (countMap.containsKey(itemLog.getRef_data_id())) {
                 countMap.put(itemLog.getRef_data_id(), countMap.get(itemLog.getRef_data_id()) + 1);
             } else {
                 countMap.put(itemLog.getRef_data_id(), 1);
             }
-        }
-        // 倒序排序
+        });
+        // 排序
         List<Map.Entry<Long, Integer>> list = new ArrayList<>(countMap.entrySet());
-        list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-        for (Map.Entry<Long, Integer> entry : list) {
-            hotItemIDs.add(entry.getKey());
-        }
+        list.sort((o1, o2) -> o2.getValue() - o1.getValue());
 
-        return hotItemIDs;
+        return list.stream().map(Map.Entry::getKey).limit(recNum).collect(Collectors.toList());
     }
 
     /**
@@ -137,24 +131,26 @@ public class DBKit {
      * @return Items ID列表
      */
     public static List<Long> getRandomItemsByInfoType(int infoType, int recNum) {
-        List<Long> randomItemIDs = new ArrayList<>();
-        List<Item> items = itemMapper.findRandomItemsByInfoType(infoType, recNum);
-        for (Item item : items) {
-            randomItemIDs.add(RecommendKit.getItemId(item, infoType));
-        }
-        return randomItemIDs;
+        List<Item> items = itemMapper.findRandomItemsByInfoType(infoType);
+        Collections.shuffle(items);
+        return items.stream().map(item -> RecommendKit.getItemId(item, infoType)).limit(recNum).collect(Collectors.toList());
+    }
+
+    /**
+     * 取当天的 Items
+     */
+    public static List<Long> getLatestItemsByDateAndInfoType(int infoType, int recNum) {
+        List<Item> items = itemMapper.findItemsByDateAndInfoType(RecommendKit.getSpecificDayFormat(-1), infoType);
+        Collections.shuffle(items);
+        return items.stream().map(item -> RecommendKit.getItemId(item, infoType)).limit(recNum).collect(Collectors.toList());
     }
 
     /**
      * 根据时间取 Items
      */
     public static List<Long> getItemsByDateAndInfoType(String startDate, int infoType) {
-        List<Long> latestItemIDs = new ArrayList<>();
         List<Item> items = itemMapper.findItemsByDateAndInfoType(startDate, infoType);
-        for (Item item : items) {
-            latestItemIDs.add(RecommendKit.getItemId(item, infoType));
-        }
-        return latestItemIDs;
+        return items.stream().map(item -> RecommendKit.getItemId(item, infoType)).collect(Collectors.toList());
     }
 
     /**

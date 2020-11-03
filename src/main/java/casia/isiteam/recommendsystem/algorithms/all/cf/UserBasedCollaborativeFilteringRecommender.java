@@ -50,9 +50,9 @@ public class UserBasedCollaborativeFilteringRecommender implements RecommendAlgo
                 // 初始化
                 RecommendKit.initToBeRecommended(userID, infoType);
                 // 添加生成的推荐项
-                for (RecommendedItem recItem : recItems) {
-                    Recommender.toBeRecommended.get(userID).get(infoType).add(recItem.getItemID());
-                }
+                recItems.forEach(recItem ->
+                    Recommender.toBeRecommended.get(userID).get(infoType).add(recItem.getItemID())
+                );
             }
 
         } catch (TasteException e) {

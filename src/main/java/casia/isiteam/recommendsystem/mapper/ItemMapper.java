@@ -16,7 +16,7 @@ public interface ItemMapper {
 
     List<Item> findItemsByIDsAndInfoType(@Param("itemIDs") Collection<Long> itemIDs, @Param("infoType") int infoType);
 
-    List<Item> findRandomItemsByInfoType(@Param("infoType") int infoType, @Param("recNum") int recNum);
+    List<Item> findRandomItemsByInfoType(@Param("infoType") int infoType);
 
     List<Item> findItemsByDateAndInfoType(@Param("startDate") String startDate, @Param("infoType") int infoType);
 }
