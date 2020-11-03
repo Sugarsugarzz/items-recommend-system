@@ -29,7 +29,6 @@ public class HotRecommender implements RecommendAlgorithm {
             while (i-- > 0) {
                 Recommender.toBeRecommended.get(userID).get(infoType).add(hotItemsMap.get(infoType).get(i));
             }
-
         }
         logger.info("信息类型：" + infoType + "  基于热点推荐 结束于 " + new Date());
     }

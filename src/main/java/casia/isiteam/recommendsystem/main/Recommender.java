@@ -90,5 +90,8 @@ public class Recommender {
         }
 
         logger.info("本次推荐结束于 " + new Date());
+
+        // 清空推荐项
+        RecommendKit.emptyRecommendations();
     }
 }

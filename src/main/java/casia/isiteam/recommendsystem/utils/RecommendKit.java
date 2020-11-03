@@ -83,9 +83,9 @@ public class RecommendKit {
         switch (infoType) {
             case 1:  return user.getPref_list();
             case 2:  return user.getWiki_pref_list();
-            case 3:  return user.getSubject_pref_list();
-            case 4:  return user.getPeriodical_pref_list();
-            case 5:  return user.getReport_pref_list();
+            case 3:  return user.getPeriodical_pref_list();
+            case 4:  return user.getReport_pref_list();
+            case 5:  return user.getSubject_pref_list();
             default:  return "";
         }
     }
@@ -96,10 +96,10 @@ public class RecommendKit {
     public static Long getItemId(Item item, int infoType) {
         switch (infoType) {
             case 1:
-            case 4:
-            case 5:  return item.getId();
+            case 3:
+            case 4:  return item.getId();
             case 2:  return item.getWiki_info_id();
-            case 3:  return item.getAuto_id();
+            case 5:  return item.getAuto_id();
             default:  return 0L;
         }
     }
@@ -111,9 +111,9 @@ public class RecommendKit {
         switch (infoType) {
             case 1:  return item.getInfoTitle();
             case 2:  return item.getName();
-            case 3:  return item.getSubjectName();
-            case 4:  return item.getPerName();
-            case 5:  return item.getReportName();
+            case 3:  return item.getPerName();
+            case 4:  return item.getReportName();
+            case 5:  return item.getSubjectName();
             default:  return "";
         }
     }

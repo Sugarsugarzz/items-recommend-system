@@ -12,13 +12,13 @@
                 SELECT wiki_info_id FROM wiki_info_ref
             </when>
             <when test="infoType == 3">
-                SELECT auto_id FROM subject_info
-            </when>
-            <when test="infoType == 4">
                 SELECT id FROM periodical
             </when>
-            <when test="infoType == 5">
+            <when test="infoType == 4">
                 SELECT id FROM reportinfo
+            </when>
+            <when test="infoType == 5">
+                SELECT auto_id FROM subject_info
             </when>
         </choose>
         ORDER BY RAND()
@@ -46,15 +46,6 @@
                 </where>
             </when>
             <when test="infoType == 3">
-                SELECT auto_id, subjectName
-                FROM subject_info
-                <where>
-                    <foreach collection="itemIDs" open="auto_id in (" close=")" item="id" separator=",">
-                        ${id}
-                    </foreach>
-                </where>
-            </when>
-            <when test="infoType == 4">
                 SELECT id, perName
                 FROM periodical
                 <where>
@@ -63,11 +54,20 @@
                     </foreach>
                 </where>
             </when>
-            <when test="infoType == 5">
+            <when test="infoType == 4">
                 SELECT id, reportName
                 FROM reportinfo
                 <where>
                     <foreach collection="itemIDs" open="id in (" close=")" item="id" separator=",">
+                        ${id}
+                    </foreach>
+                </where>
+            </when>
+            <when test="infoType == 5">
+                SELECT auto_id, subjectName
+                FROM subject_info
+                <where>
+                    <foreach collection="itemIDs" open="auto_id in (" close=")" item="id" separator=",">
                         ${id}
                     </foreach>
                 </where>
@@ -86,16 +86,16 @@
                 FROM wiki_info_ref
             </when>
             <when test="infoType == 3">
-                SELECT auto_id, subjectName
-                FROM subject_info
-            </when>
-            <when test="infoType == 4">
                 SELECT id, perName
                 FROM periodical
             </when>
-            <when test="infoType == 5">
+            <when test="infoType == 4">
                 SELECT id, reportName
                 FROM reportinfo
+            </when>
+            <when test="infoType == 5">
+                SELECT auto_id, subjectName
+                FROM subject_info
             </when>
         </choose>
     </select>
@@ -113,18 +113,18 @@
                 WHERE publishTime &gt; #{startDate}
             </when>
             <when test="infoType == 3">
-                SELECT auto_id, subjectName
-                FROM subject_info
-                WHERE insert_time &gt; #{startDate}
-            </when>
-            <when test="infoType == 4">
                 SELECT id, perName
                 FROM periodical
                 WHERE insert_time &gt; #{startDate}
             </when>
-            <when test="infoType == 5">
+            <when test="infoType == 4">
                 SELECT id, reportName
                 FROM reportinfo
+                WHERE insert_time &gt; #{startDate}
+            </when>
+            <when test="infoType == 5">
+                SELECT auto_id, subjectName
+                FROM subject_info
                 WHERE insert_time &gt; #{startDate}
             </when>
         </choose>

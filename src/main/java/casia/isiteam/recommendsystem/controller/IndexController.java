@@ -11,11 +11,6 @@ import java.util.List;
 @RestController
 public class IndexController {
 
-    @RequestMapping("/hello")
-    public String hello() {
-        return "hello";
-    }
-
     @RequestMapping("/execute")
     public String doRecommend() {
         new Recommender().executeInstantJobForAllUsers();
