@@ -35,15 +35,19 @@ public class LatestRecommendService {
     public void formLatestItems() {
         // 获取每个类型的随机项
         log.info("正在生成 最新项....");
-        for (Integer infoType : Constant.INFO_TYPES) {
-            // 生成随机项
-            Candidates.latestItemsMap.put(infoType, new ArrayList<>());
-            List<Long> latestItemIds = DBKit.getLatestItemsByDateAndInfoType(infoType, recConfig.getLatestRecommendNum());
-            Candidates.latestItemsMap.get(infoType).addAll(latestItemIds);
-            // 添加到默认推荐项
-            latestItemIds.forEach(itemId ->
-                Candidates.latestCandidates.add(new long[] {itemId, infoType})
-            );
+        try {
+            for (Integer infoType : Constant.INFO_TYPES) {
+                // 生成随机项
+                Candidates.latestItemsMap.put(infoType, new ArrayList<>());
+                List<Long> latestItemIds = DBKit.getLatestItemsByDateAndInfoType(infoType, recConfig.getLatestRecommendNum());
+                Candidates.latestItemsMap.get(infoType).addAll(latestItemIds);
+                // 添加到默认推荐项
+                latestItemIds.forEach(itemId ->
+                        Candidates.latestCandidates.add(new long[] {itemId, infoType})
+                );
+            }
+        } catch (Exception e) {
+            log.error("生成最新项发生错误！", e);
         }
         log.info("生成 最新项 完毕！");
     }

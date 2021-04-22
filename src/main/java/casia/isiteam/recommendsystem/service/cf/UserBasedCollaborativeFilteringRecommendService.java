@@ -53,7 +53,7 @@ public class UserBasedCollaborativeFilteringRecommendService {
             }
 
         } catch (Exception e) {
-            log.error("协同过滤 构建偏好模型失败！");
+            log.error("协同过滤 构建偏好模型失败！", e);
         }
 
         log.info("信息类型：{} - 基于用户的协同过滤 End.", infoType);

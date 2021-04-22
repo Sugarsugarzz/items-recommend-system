@@ -36,16 +36,21 @@ public class HotRecommendService {
     public void formHotItems() {
         // 获取每个类型的热点项
         log.info("正在生成 热点项....");
-        for (Integer infoType : Constant.INFO_TYPES) {
-            // 生成热点项
-            Candidates.hotItemsMap.put(infoType, new ArrayList<>());
-            List<Long> hotItemIds = DBKit.getHotItemIds(RecommendKit.getInRecDate(recConfig.getHotBeforeDays()), infoType, recConfig.getHotRecommendNum());
-            Candidates.hotItemsMap.get(infoType).addAll(hotItemIds);
-            // 添加到默认推荐项
-            hotItemIds.forEach(itemId ->
-                Candidates.defaultCandidates.add(new long[] {itemId, infoType})
-            );
+        try {
+            for (Integer infoType : Constant.INFO_TYPES) {
+                // 生成热点项
+                Candidates.hotItemsMap.put(infoType, new ArrayList<>());
+                List<Long> hotItemIds = DBKit.getHotItemIds(RecommendKit.getInRecDate(recConfig.getHotBeforeDays()), infoType, recConfig.getHotRecommendNum());
+                Candidates.hotItemsMap.get(infoType).addAll(hotItemIds);
+                // 添加到默认推荐项
+                hotItemIds.forEach(itemId ->
+                        Candidates.defaultCandidates.add(new long[] {itemId, infoType})
+                );
+            }
+        } catch (Exception e) {
+            log.error("生成热点项发生错误！", e);
         }
+
         log.info("生成 热点项 完毕！");
     }
 }

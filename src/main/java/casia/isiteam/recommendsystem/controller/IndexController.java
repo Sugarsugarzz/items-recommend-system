@@ -112,6 +112,8 @@ public class IndexController {
 
             // 清空推荐项
             RecommendKit.emptyRecommendations();
+        } catch (Exception e) {
+            log.error("本轮推荐发生错误！", e);
         } finally {
             Constant.isProcessing = false;
         }

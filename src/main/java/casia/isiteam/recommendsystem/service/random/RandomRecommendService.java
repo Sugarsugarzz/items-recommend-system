@@ -35,15 +35,19 @@ public class RandomRecommendService {
     public void formRandomItems() {
         // 获取每个类型的随机项
         log.info("正在生成 随机项....");
-        for (Integer infoType : Constant.INFO_TYPES) {
-            // 生成随机项
-            Candidates.randomItemsMap.put(infoType, new ArrayList<>());
-            List<Long> randomItemIds = DBKit.getRandomItemsByInfoType(infoType, recConfig.getRandomRecommendNum());
-            Candidates.randomItemsMap.get(infoType).addAll(randomItemIds);
-            // 添加到默认推荐项
-            randomItemIds.forEach(itemId ->
-                Candidates.defaultCandidates.add(new long[] {itemId, infoType})
-            );
+        try {
+            for (Integer infoType : Constant.INFO_TYPES) {
+                // 生成随机项
+                Candidates.randomItemsMap.put(infoType, new ArrayList<>());
+                List<Long> randomItemIds = DBKit.getRandomItemsByInfoType(infoType, recConfig.getRandomRecommendNum());
+                Candidates.randomItemsMap.get(infoType).addAll(randomItemIds);
+                // 添加到默认推荐项
+                randomItemIds.forEach(itemId ->
+                        Candidates.defaultCandidates.add(new long[] {itemId, infoType})
+                );
+            }
+        } catch (Exception e) {
+            log.error("生成随机项发生错误！", e);
         }
         log.info("生成 随机项 完毕！");
     }
