@@ -5,6 +5,7 @@ import casia.isiteam.recommendsystem.common.RecConfig;
 import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
+import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
 import org.apache.mahout.cf.taste.impl.common.FastIDSet;
@@ -76,14 +77,18 @@ public class UserBasedCollaborativeFilteringRecommendService {
         }
 
         // 构建无偏模型
-        FastByIDMap fastByIDMap = new FastByIDMap();
-        for (Long userID : map.keySet()) {
-            List<Long> list = map.get(userID);
+        FastByIDMap fastByIDMap = new FastByIDMap<>();
+        for (Long userId : map.keySet()) {
+            if (ObjectUtil.isEmpty(userId)) {
+                log.error("user_read_record表中出现user_id为null的数据。");
+                continue;
+            }
+            List<Long> list = map.get(userId);
             FastIDSet set = new FastIDSet();
             for (Long aLong : list) {
                 set.add(aLong);
             }
-            fastByIDMap.put(userID, set);
+            fastByIDMap.put(userId, set);
         }
 
         return new GenericBooleanPrefDataModel(fastByIDMap);

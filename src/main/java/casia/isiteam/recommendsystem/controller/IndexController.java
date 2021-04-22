@@ -54,7 +54,10 @@ public class IndexController {
     @RequestMapping("/executeForAllUsers")
     public void executeInstantJobForAllUsers() {
         if (!Constant.isProcessing) {
+            log.info("============ 开始本轮推荐 ============");
             executeInstantJob(DBKit.getAllUserIds());
+        } else {
+            log.info("============ 已有推荐任务在执行中，跳过本次推荐 ============");
         }
     }
 
