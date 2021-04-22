@@ -1,14 +1,13 @@
 package casia.isiteam.recommendsystem.utils;
 
-import casia.isiteam.recommendsystem.algorithms.all.hr.HotRecommender;
-import casia.isiteam.recommendsystem.algorithms.all.latest.LatestRecommender;
-import casia.isiteam.recommendsystem.algorithms.all.random.RandomRecommender;
-import casia.isiteam.recommendsystem.main.Recommender;
+import casia.isiteam.recommendsystem.common.Candidates;
+import casia.isiteam.recommendsystem.common.RecConfig;
 import casia.isiteam.recommendsystem.model.Item;
 import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.User;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import cn.hutool.core.util.ObjectUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -17,19 +16,22 @@ import java.util.*;
 /**
  * 供算法调用的工具方法
  */
+@Component
 public class RecommendKit {
 
-    private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
+    static RecConfig recConfig;
 
-    // 推荐信息项的时效性天数，即从推荐当天开始到之前的 beforeDays 天的信息项仍然具有时效性，予以推荐
-    private static final int beforeDays = ConfigKit.getInt("RecommendBeforeDays");
+    @Autowired
+    public void setRecConfig(RecConfig recConfig) {
+        RecommendKit.recConfig = recConfig;
+    }
 
     /**
      * 在当日基础上增加/减少天数后的日期字符串
      * @return yyyy-MM-dd 日期字符串
      */
     public static String getInRecDate() {
-        return getSpecificDayFormat(beforeDays);
+        return getSpecificDayFormat(recConfig.getRecommendBeforeDays());
     }
 
     /**
@@ -47,7 +49,8 @@ public class RecommendKit {
     public static String getSpecificDayFormat(int beforeDays) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, beforeDays);  // 增加/减少天数，取决beforeDays的正负
+        // 增加/减少天数，取决beforeDays的正负
+        calendar.add(Calendar.DAY_OF_MONTH, beforeDays);
         return sdf.format(calendar.getTime());
     }
 
@@ -64,12 +67,12 @@ public class RecommendKit {
 
     /**
      * 获取 用户与偏好列表 的键值对
-     * @param userIDs 用户ID列表
+     * @param userIds 用户ID列表
      * @param infoType 类型
      */
-    public static Map<Long, String> getUserPreListMap(Collection<Long> userIDs, int infoType) {
+    public static Map<Long, String> getUserPreListMap(Collection<Long> userIds, int infoType) {
         Map<Long, String> map = new HashMap<>();
-        List<User> users = DBKit.getUserPrefList(userIDs, infoType);
+        List<User> users = DBKit.getUserPrefList(userIds, infoType);
         users.forEach(user ->
             map.put(user.getId(), RecommendKit.getPrefList(user, infoType))
         );
@@ -121,12 +124,14 @@ public class RecommendKit {
     /**
      * 过滤用户已经看过的信息项
      * @param recItemList 信息项推荐列表
-     * @param userID 用户ID
+     * @param userId 用户ID
      * @param infoType 类型
      */
-    public static void filterBrowsedItems(Collection<Long> recItemList, Long userID, int infoType) {
-        if (recItemList.size() == 0)  return;
-        List<ItemLog> userBrowsedItems = DBKit.getUserBrowsedItems(userID, infoType);
+    public static void filterBrowsedItems(Collection<Long> recItemList, Long userId, int infoType) {
+        if (ObjectUtil.isEmpty(recItemList)) {
+            return;
+        }
+        List<ItemLog> userBrowsedItems = DBKit.getUserBrowsedItems(userId, infoType);
         userBrowsedItems.forEach(itemLog ->
             recItemList.remove(itemLog.getRef_data_id())
         );
@@ -138,7 +143,9 @@ public class RecommendKit {
      */
     public static void removeOverSizeItems(Collection<Long> toBeRecommended, int recNum) {
 
-        if (toBeRecommended.size() <= recNum)  return;
+        if (toBeRecommended.size() <= recNum)  {
+            return;
+        }
         int i = 0;
         Iterator<Long> iterator = toBeRecommended.iterator();
         while (iterator.hasNext()) {
@@ -153,20 +160,20 @@ public class RecommendKit {
     /**
      * 初始化 toBeRecommended
      */
-    public static void initToBeRecommended(Long userID, int infoType) {
-        Recommender.toBeRecommended.computeIfAbsent(userID, k -> new HashMap<>());
-        Recommender.toBeRecommended.get(userID).computeIfAbsent(infoType, k -> new HashSet<>());
+    public static void initToBeRecommended(Long userId, int infoType) {
+        Candidates.toBeRecommended.computeIfAbsent(userId, k -> new HashMap<>());
+        Candidates.toBeRecommended.get(userId).computeIfAbsent(infoType, k -> new HashSet<>());
     }
 
     /**
      * 推荐项初始化
      */
     public static void emptyRecommendations() {
-        Recommender.toBeRecommended.clear();
-        Recommender.defaultCandidates.clear();
-        Recommender.latestCandidates.clear();
-        HotRecommender.hotItemsMap.clear();
-        LatestRecommender.latestItemsMap.clear();
-        RandomRecommender.randomItemsMap.clear();
+        Candidates.toBeRecommended.clear();
+        Candidates.defaultCandidates.clear();
+        Candidates.latestCandidates.clear();
+        Candidates.hotItemsMap.clear();
+        Candidates.latestItemsMap.clear();
+        Candidates.randomItemsMap.clear();
     }
 }

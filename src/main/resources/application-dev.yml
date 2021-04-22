@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 9001
 
 spring:
   datasource:
@@ -21,6 +21,18 @@ spring:
       test-on-return: false
 
 mybatis:
-  mapper-locations: classpath:mybatis/mapper/*.xml
-logging:
-  config: classpath:log4j2.xml
+  mapper-locations: classpath:mapper/*.xml
+
+# 推荐配置参数
+rec-config:
+  recommend-before-days: -7
+  cf-recommend-num: 50
+  cf-valid-days: -90
+  cb-recommend-num: 80
+  tfidf-keywords-num: 6
+  pref-threshold: 8
+  decay-num: 0.7
+  hot-before-days: -90
+  hot-recommend-num: 60
+  random-recommend-num: 50
+  latest-recommend-num: 40

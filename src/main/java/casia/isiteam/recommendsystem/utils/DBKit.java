@@ -8,17 +8,9 @@ import casia.isiteam.recommendsystem.model.Item;
 import casia.isiteam.recommendsystem.model.ItemLog;
 import casia.isiteam.recommendsystem.model.Recommendation;
 import casia.isiteam.recommendsystem.model.User;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,8 +20,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class DBKit {
-
-    private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     static UserMapper userMapper;
     static ItemMapper itemMapper;
@@ -60,7 +50,7 @@ public class DBKit {
      * 获取所有 User ID
      * @return UserID列表
      */
-    public static List<Long> getAllUserIDs() {
+    public static List<Long> getAllUserIds() {
         List<User> users = userMapper.findAllUsers();
         return users.stream().map(User::getId).collect(Collectors.toList());
     }
@@ -77,10 +67,10 @@ public class DBKit {
     /**
      * 根据用户ID，更新用户的偏好关键词列表
      * @param prefList 新的偏好列表
-     * @param userID 用户ID
+     * @param userId 用户ID
      */
-    public static void updateUserPrefList(String prefList, Long userID, int infoType) {
-        userMapper.updatePrefListByUserIDAndInfoType(prefList, userID, infoType);
+    public static void updateUserPrefList(String prefList, Long userId, int infoType) {
+        userMapper.updatePrefListByUserIDAndInfoType(prefList, userId, infoType);
     }
 
     /**
@@ -106,17 +96,13 @@ public class DBKit {
      * @param infoType 类型
      * @return 信息项ID列表
      */
-    public static List<Long> getHotItemIDs(String startDate, int infoType, int recNum) {
+    public static List<Long> getHotItemIds(String startDate, int infoType, int recNum) {
 
         List<ItemLog> itemLogs = itemLogMapper.findBrowsedItemsByDate(startDate, infoType);
         // 根据浏览次数生成Map
         Map<Long, Integer> countMap = new HashMap<>();
         itemLogs.forEach(itemLog -> {
-            if (countMap.containsKey(itemLog.getRef_data_id())) {
-                countMap.put(itemLog.getRef_data_id(), countMap.get(itemLog.getRef_data_id()) + 1);
-            } else {
-                countMap.put(itemLog.getRef_data_id(), 1);
-            }
+            countMap.put(itemLog.getRef_data_id(), countMap.getOrDefault(itemLog.getRef_data_id(), 0) + 1);
         });
         // 排序
         List<Map.Entry<Long, Integer>> list = new ArrayList<>(countMap.entrySet());
@@ -164,6 +150,17 @@ public class DBKit {
     }
 
     /**
+     * 获取当日特定用户的浏览记录
+     * @param startDate 日期
+     * @param infoType  信息类型
+     * @param userIds   用户ID列表
+     * @return          ItemLogs
+     */
+    public static List<ItemLog> getBrowsedItemsByDateAndUsers(String startDate, int infoType, List<Long> userIds) {
+        return itemLogMapper.findBrowsedItemsByDateAndUsers(startDate, infoType, userIds);
+    }
+
+    /**
      * 获取当日所有用户的浏览记录
      * @param startDate 日期
      * @param infoType 类型
@@ -186,20 +183,20 @@ public class DBKit {
 
     /**
      * 获取对用户的推荐记录
-     * @param userID 用户ID
+     * @param userId 用户ID
      * @param infoType 头条 or 百科
      * @return 推荐记录
      */
-    public static List<Recommendation> getUserRecommendedItems(Long userID, int infoType) {
-        return recommendationMapper.findRecommendedItemsByUser(userID, infoType);
+    public static List<Recommendation> getUserRecommendedItems(Long userId, int infoType) {
+        return recommendationMapper.findRecommendedItemsByUser(userId, infoType);
     }
 
     /**
      * 将推荐结果存入 recommendations 表
-     * @param userID 用户ID
+     * @param userId 用户ID
      */
-    public static void saveRecommendation(Long userID, List<long[]> candidates) {
-        recommendationMapper.saveRecommendation(userID, candidates);
+    public static void saveRecommendation(Long userId, List<long[]> candidates) {
+        recommendationMapper.saveRecommendation(userId, candidates);
     }
 
     public static void saveDefaultRecommendation(List<long[]> candidates)  {

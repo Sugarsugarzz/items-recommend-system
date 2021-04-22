@@ -14,4 +14,13 @@
         FROM user_read_record
         WHERE insert_time &gt; #{startDate} and info_type = ${infoType}
     </select>
+
+    <select id="findBrowsedItemsByDateAndUsers" resultType="casia.isiteam.recommendsystem.model.ItemLog">
+        select user_id, ref_data_id
+        from user_read_record
+        where insert_time &gt; #{startDate} and info_type = ${infoType} and user_id in
+        <foreach collection="userIds" open="(" close=")" item="id" separator=",">
+            ${id}
+        </foreach>
+    </select>
 </mapper>

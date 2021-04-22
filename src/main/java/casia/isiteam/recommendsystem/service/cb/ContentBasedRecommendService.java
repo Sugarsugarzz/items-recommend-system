@@ -1,78 +1,82 @@
-package casia.isiteam.recommendsystem.algorithms.all.cb;
+package casia.isiteam.recommendsystem.service.cb;
 
-import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
-import casia.isiteam.recommendsystem.main.Recommender;
+import casia.isiteam.recommendsystem.common.Candidates;
+import casia.isiteam.recommendsystem.common.RecConfig;
 import casia.isiteam.recommendsystem.model.Item;
-import casia.isiteam.recommendsystem.utils.ConfigKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
 import casia.isiteam.recommendsystem.utils.TFIDF;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.ansj.app.keyword.Keyword;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ContentBasedRecommender implements RecommendAlgorithm {
 
-    private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
+@Slf4j
+@Service
+public class ContentBasedRecommendService {
 
-    // TD-IDF提取关键词词数
-    private static final int KEY_WORDS_NUM = ConfigKit.getInt("TFIDFKeywordsNum");
-    // 利用CB推荐的总数
-    private static final int recNum = ConfigKit.getInt("CBRecommendNum");
+    @Autowired
+    RecConfig recConfig;
+    @Autowired
+    UserPrefRefresher userPrefRefresher;
 
+    public void recommend(List<Long> userIds, int infoType) {
 
-    @Override
-    public void recommend(List<Long> userIDs, int infoType) {
-
-        logger.info("信息类型：" + infoType + "  基于内容的推荐 开始于 " + new Date());
+        log.info("信息类型：{} - 基于内容的推荐 Start.", infoType);
 
         try {
             // 更新用户偏好
-            new UserPrefRefresher().refresher(userIDs, infoType);
-            logger.info("用户偏好更新完成（衰减+递增） 于 " + new Date());
+            userPrefRefresher.refresher(userIds, infoType);
+            log.info("用户偏好更新完成（衰减+递增）！");
 
             // （信息项ID - 信息项关键词列表）
             Map<Long, List<Keyword>> itemsKeywordsMap = new HashMap<>();
             // （用户ID - 偏好列表 String）
-            Map<Long, String> usersPrefListMap = RecommendKit.getUserPreListMap(userIDs, infoType);
+            Map<Long, String> usersPrefListMap = RecommendKit.getUserPreListMap(userIds, infoType);
             // 获取所有信息项
             List<Item> itemList = DBKit.getItems(infoType);
 
             // itemList -->  itemsKeywordsMap
             for (Item item : itemList) {
-                itemsKeywordsMap.put(RecommendKit.getItemId(item, infoType), TFIDF.getKeywordsByTFIDE(RecommendKit.getItemName(item, infoType), KEY_WORDS_NUM));
+                itemsKeywordsMap.put(RecommendKit.getItemId(item, infoType), TFIDF.getKeywordsByTFIDE(RecommendKit.getItemName(item, infoType), recConfig.getTfidfKeywordsNum()));
             }
 
             // 遍历用户，为每个用户生成匹配的信息项
-            for (Long userID : userIDs) {
+            for (Long userId : userIds) {
                 // 获取用户偏好
-                Map<String, Object> map = JSONObject.parseObject(usersPrefListMap.get(userID));
+                Map<String, Object> map = JSONObject.parseObject(usersPrefListMap.get(userId));
                 // 该用户无偏好则跳过
-                if (map.isEmpty())  continue;
+                if (ObjectUtil.isEmpty(map))  {
+                    continue;
+                }
                 // 暂存与用户偏好匹配的信息项， （信息项ID - 匹配值）
                 Map<Long, Double> tempMatchMap = new LinkedHashMap<>();
                 // 遍历信息项，获取每个信息项与用户的匹配度
-                for (Long itemID : itemsKeywordsMap.keySet()) {
-                    tempMatchMap.put(itemID, getMatchValue(map, itemsKeywordsMap.get(itemID)));
+                for (Long itemId : itemsKeywordsMap.keySet()) {
+                    Double matchValue = getMatchValue(map, itemsKeywordsMap.get(itemId));
+                    if (matchValue > 1000) {
+                        tempMatchMap.put(itemId, matchValue);
+                    }
                 }
                 // 初始化
-                RecommendKit.initToBeRecommended(userID, infoType);
+                RecommendKit.initToBeRecommended(userId, infoType);
                 // 处理
-                removeLowMatchItem(tempMatchMap);
                 List<Map.Entry<Long, Double>> list = new ArrayList<>(tempMatchMap.entrySet());
                 list.sort((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
-                Recommender.toBeRecommended.get(userID).get(infoType).addAll(list.stream().map(Map.Entry::getKey).limit(recNum).collect(Collectors.toList()));
+                Candidates.toBeRecommended.get(userId).get(infoType).addAll(list.stream().map(Map.Entry::getKey).limit(recConfig.getCbRecommendNum()).collect(Collectors.toList()));
             }
 
         } catch (Exception e) {
-            logger.error("信息类型：" + infoType + "  基于内容的推荐 失败：" + e);
+            log.error("信息类型：{} - 基于内容的推荐 失败：{}", infoType, e);
         }
 
-        logger.info("信息类型：" + infoType + "  基于内容的推荐 结束于 " + new Date());
+        log.info("信息类型：{} - 基于内容的推荐 End.", infoType);
 
     }
 
@@ -90,19 +94,13 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
         return matchValue;
     }
 
-
-    /**
-     * 清除匹配值小于 1000 的信息项
-     */
-    private void removeLowMatchItem(Map<Long, Double> map) {
-        map.keySet().removeIf(itemID -> map.get(itemID) < 1000);
-    }
-
     /**
      * 根据 Value 对 Map 排序
      */
     private Map<Long, Double> sortMapByValue(Map<Long, Double> map) {
-        if (map.size() == 0)  return map;
+        if (map.size() == 0)  {
+            return map;
+        }
         List<Map.Entry<Long, Double>> list = new ArrayList<>(map.entrySet());
         list.sort((o1, o2) -> (int) (o2.getValue() - o1.getValue()));
         Map<Long, Double> resultMap = new LinkedHashMap<>();
@@ -111,5 +109,4 @@ public class ContentBasedRecommender implements RecommendAlgorithm {
         }
         return resultMap;
     }
-
 }

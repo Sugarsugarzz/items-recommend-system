@@ -1,14 +1,11 @@
-package casia.isiteam.recommendsystem.algorithms.all.cf;
+package casia.isiteam.recommendsystem.service.cf;
 
-import casia.isiteam.recommendsystem.algorithms.RecommendAlgorithm;
-import casia.isiteam.recommendsystem.main.Recommender;
+import casia.isiteam.recommendsystem.common.Candidates;
+import casia.isiteam.recommendsystem.common.RecConfig;
 import casia.isiteam.recommendsystem.model.ItemLog;
-import casia.isiteam.recommendsystem.utils.ConfigKit;
 import casia.isiteam.recommendsystem.utils.DBKit;
 import casia.isiteam.recommendsystem.utils.RecommendKit;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.mahout.cf.taste.common.TasteException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
 import org.apache.mahout.cf.taste.impl.common.FastIDSet;
 import org.apache.mahout.cf.taste.impl.model.GenericBooleanPrefDataModel;
@@ -18,62 +15,63 @@ import org.apache.mahout.cf.taste.impl.similarity.LogLikelihoodSimilarity;
 import org.apache.mahout.cf.taste.model.DataModel;
 import org.apache.mahout.cf.taste.neighborhood.UserNeighborhood;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
+import org.apache.mahout.cf.taste.recommender.Recommender;
 import org.apache.mahout.cf.taste.similarity.UserSimilarity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-public class UserBasedCollaborativeFilteringRecommender implements RecommendAlgorithm {
 
-    private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
+@Slf4j
+@Service
+public class UserBasedCollaborativeFilteringRecommendService {
 
-    // 计算用户相似度时的时效天数
-    private static final int recValidDays = ConfigKit.getInt("CFValidDays");
-    // 利用CF推荐的总数
-    private static final int recNum = ConfigKit.getInt("CFRecommendNum");
+    @Autowired
+    RecConfig recConfig;
 
+    public void recommend(List<Long> userIds, int infoType) {
 
-    @Override
-    public void recommend(List<Long> userIDs, int infoType) {
-
-        logger.info("信息类型：" + infoType + "  基于用户的协同过滤 开始于 " + new Date());
+        log.info("信息类型：{} - 基于用户的协同过滤 Start.", infoType);
 
         try {
             // 建模
             DataModel dataModel = getDataModel(infoType);
             UserSimilarity similarity = new LogLikelihoodSimilarity(dataModel);
             UserNeighborhood neighborhood = new NearestNUserNeighborhood(6, similarity, dataModel);
-            org.apache.mahout.cf.taste.recommender.Recommender recommender = new GenericUserBasedRecommender(dataModel, neighborhood, similarity);
+            Recommender recommender = new GenericUserBasedRecommender(dataModel, neighborhood, similarity);
 
-            for (Long userID : userIDs) {
+            for (Long userId : userIds) {
                 // 获取针对每个用户的推荐项
-                List<RecommendedItem> recItems = recommender.recommend(userID, recNum);
+                List<RecommendedItem> recItems = recommender.recommend(userId, recConfig.getCfRecommendNum());
                 // 初始化
-                RecommendKit.initToBeRecommended(userID, infoType);
+                RecommendKit.initToBeRecommended(userId, infoType);
                 // 添加生成的推荐项
                 recItems.forEach(recItem ->
-                    Recommender.toBeRecommended.get(userID).get(infoType).add(recItem.getItemID())
+                    Candidates.toBeRecommended.get(userId).get(infoType).add(recItem.getItemID())
                 );
             }
 
-        } catch (TasteException e) {
-            logger.error("协同过滤 构建偏好模型失败！");
+        } catch (Exception e) {
+            log.error("协同过滤 构建偏好模型失败！");
         }
 
-        logger.info("信息类型：" + infoType + "  基于用户的协同过滤 结束于 " + new Date());
+        log.info("信息类型：{} - 基于用户的协同过滤 End.", infoType);
     }
 
 
     /**
      * 根据时效内所有用户的浏览历史，生成DataSourceModel，用于构建协同过滤模型
      */
-    private static DataModel getDataModel(int infoType) {
+    private DataModel getDataModel(int infoType) {
 
         // 构建 <用户ID> - <浏览项ID List> 的 Map
         Map<Long, List<Long>> map = new HashMap<>();
-        List<ItemLog> itemLogs = DBKit.getBrowsedItemsByDate(RecommendKit.getInRecDate(recValidDays), infoType);
+        List<ItemLog> itemLogs = DBKit.getBrowsedItemsByDate(RecommendKit.getInRecDate(recConfig.getCfValidDays()), infoType);
         for (ItemLog itemLog : itemLogs) {
-            if (!map.containsKey(itemLog.getUser_id()))
+            if (!map.containsKey(itemLog.getUser_id())) {
                 map.put(itemLog.getUser_id(), new ArrayList<>());
+            }
             map.get(itemLog.getUser_id()).add(itemLog.getRef_data_id());
         }
 

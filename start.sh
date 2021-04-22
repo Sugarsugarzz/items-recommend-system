@@ -1,0 +1,1 @@
+nohup java -jar service-recommend-system.jar &

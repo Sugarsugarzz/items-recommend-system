@@ -14,4 +14,6 @@ public interface ItemLogMapper {
     List<ItemLog> findBrowsedItemsByUser(@Param("userID") Long userID, @Param("infoType") int infoType);
 
     List<ItemLog> findBrowsedItemsByDate(@Param("startDate") String startDate, @Param("infoType") int infoType);
+
+    List<ItemLog> findBrowsedItemsByDateAndUsers(@Param("startDate") String startDate, @Param("infoType") int infoType, @Param("userIds") List<Long> userIds);
 }
